@@ -1,0 +1,146 @@
+{
+ "music": "work/epic.wav",
+ "xfade": 0.25,
+ "segments": [
+  {
+   "src": "work/src/20260922_082718.mp4",
+   "start": 0.5,
+   "dur": 4.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_082654.mp4",
+   "start": 6.3,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_082736.mp4",
+   "start": 0.3,
+   "dur": 4.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_082757.mp4",
+   "start": 0.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_082925.mp4",
+   "start": 0.3,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083840.mp4",
+   "start": 0.3,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083456.mp4",
+   "start": 0.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083312.mp4",
+   "start": 2.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083456.mp4",
+   "start": 5.0,
+   "dur": 4.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083938.mp4",
+   "start": 0.3,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_085229.mp4",
+   "start": 5.5,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_085847.mp4",
+   "start": 5.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_084841.mp4",
+   "start": 8.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083344.mp4",
+   "start": 9.5,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083957.mp4",
+   "start": 0.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083938.mp4",
+   "start": 6.0,
+   "dur": 4.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_090952.mp4",
+   "start": 7.3,
+   "dur": 4.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_091042.mp4",
+   "start": 8.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_085229.mp4",
+   "start": 0.0,
+   "dur": 2.25,
+   "mode": "crop",
+   "zoom": 1.05
+  },
+  {
+   "src": "work/src/20260922_083957.mp4",
+   "start": 3.8,
+   "dur": 4,
+   "mode": "crop",
+   "zoom": 1.0
+  }
+ ]
+}

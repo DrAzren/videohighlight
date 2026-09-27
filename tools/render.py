@@ -49,13 +49,28 @@ def video_filter(s):
     z = f"(1+({zoom}-1)*t/{dur})"
     if s.get("mode", "fill") == "crop":
         cx = s.get("cx", 0.5)
-        # cover-scale to 9:16, crop around cx, then animated push-in cropped back to W x H
-        fg = (f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,"
+        # stabilise (vidstab, 2-pass) -> clean up noise -> cover-scale to 9:16 around cx
+        # -> slow push-in -> sharpen -> cinematic grade
+        stab = ""
+        if s.get("stab", True):
+            trf = tmp / f"stab{id(s)}.trf"
+            run(["ffmpeg", "-v", "error", "-y", "-ss", str(s["start"]), "-t", str(dur),
+                 "-i", s["src"], "-vf", f"vidstabdetect=shakiness=6:accuracy=12:result={trf}",
+                 "-f", "null", "-"])
+            stab = (f"vidstabtransform=input={trf}:smoothing=18:optzoom=1:"
+                    f"interpol=bicubic:crop=black,")
+        fg = (f"{stab}fps={FPS},hqdn3d=2:1.5:4:3,"
+              f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,"
               f"crop={W}:{H}:(iw-{W})*{cx}:(ih-{H})/2,"
-              f"scale=w='{W}*{z}':h='{H}*{z}':eval=frame:flags=bicubic,"
+              f"scale=w='{W}*{z}':h='{H}*{z}':eval=frame:flags=lanczos,"
               f"crop={W}:{H}")
-        chain = (f"[0:v]{fg},setsar=1,fps={FPS},eq=contrast=1.05:saturation=1.1:gamma=0.97,"
-                 f"colorbalance=rm=0.03:bm=-0.03[g0];movie={GRAD}[gr];[g0][gr]overlay=0:0[v0]")
+        grade = ("cas=strength=0.5,eq=contrast=1.07:saturation=1.16:gamma=1.04:brightness=0.01,"
+                 "colorbalance=rs=0.02:bs=-0.03:rm=0.03:bm=-0.03:rh=0.02:bh=-0.02,"
+                 "vignette=angle=PI/7")
+        chain = f"[0:v]{fg},setsar=1,{grade}[v0]"
+        if s.get("text"):
+            chain = (f"[0:v]{fg},setsar=1,{grade}[g0];movie={GRAD}[gr];"
+                     f"[g0][gr]overlay=0:0[v0]")
     else:
         chain = (
             f"[0:v]split[a][b];"
@@ -94,7 +109,7 @@ for i, s in enumerate(segs):
            vf + f";[0:a]aresample=48000,aformat=channel_layouts=stereo,volume={vol},"
                 f"apad,atrim=0:{s['dur']}[a0]",
            "-map", f"[{last}]", "-map", "[a0]",
-           "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
+           "-c:v", "libx264", "-preset", "medium", "-crf", "14", "-pix_fmt", "yuv420p",
            "-c:a", "pcm_s16le", "-t", str(s["dur"]), str(o)]
     # sources without audio: use the silent track instead
     has_audio = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries",
@@ -136,7 +151,7 @@ fc.append(f"[{aprev}][m]amix=inputs=2:normalize=0,alimiter=limit=0.95,"
           f"loudnorm=I=-14:TP=-1.5:LRA=11[aout]")
 
 run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", ";".join(fc),
-     "-map", "[vout]", "-map", "[aout]", "-c:v", "libx264", "-preset", "slow", "-crf", "18",
+     "-map", "[vout]", "-map", "[aout]", "-c:v", "libx264", "-preset", "slow", "-crf", "16",
      "-profile:v", "high", "-pix_fmt", "yuv420p", "-r", str(FPS), "-c:a", "aac", "-b:a", "192k",
      "-ar", "48000", "-movflags", "+faststart", "-t", f"{total:.2f}", str(out)])
 print(f"wrote {out} ({total:.1f}s)")
