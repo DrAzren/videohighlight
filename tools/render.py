@@ -28,6 +28,11 @@ FONT = "/usr/share/fonts/opentype/montserrat/Montserrat-ExtraBold.otf"
 cfg = json.loads(Path(sys.argv[1]).read_text())
 out = Path(sys.argv[2])
 tmp = Path(tempfile.mkdtemp(prefix="reel_"))
+GRAD = tmp / "grad.png"
+# bottom-up dark gradient so captions stay readable on busy backgrounds
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"color=c=black:s={W}x{H}",
+                "-vf", "format=rgba,geq=r=0:g=0:b=0:a='if(gt(Y,H*0.45),200*pow((Y-H*0.45)/(H*0.55),1.4),0)'",
+                "-frames:v", "1", str(GRAD)], check=True)
 XF = float(cfg.get("xfade", 0.35))
 segs = cfg["segments"]
 
@@ -49,7 +54,8 @@ def video_filter(s):
               f"crop={W}:{H}:(iw-{W})*{cx}:(ih-{H})/2,"
               f"scale=w='{W}*{z}':h='{H}*{z}':eval=frame:flags=bicubic,"
               f"crop={W}:{H}")
-        chain = f"[0:v]{fg},setsar=1,fps={FPS}[v0]"
+        chain = (f"[0:v]{fg},setsar=1,fps={FPS},eq=contrast=1.05:saturation=1.1:gamma=0.97,"
+                 f"colorbalance=rm=0.03:bm=-0.03[g0];movie={GRAD}[gr];[g0][gr]overlay=0:0[v0]")
     else:
         chain = (
             f"[0:v]split[a][b];"
@@ -65,9 +71,11 @@ def video_filter(s):
         t_in, t_out = 0.25, dur - 0.25
         alpha = (f"if(lt(t,{t_in}),0,if(lt(t,{t_in}+0.4),(t-{t_in})/0.4,"
                  f"if(lt(t,{t_out}-0.35),1,if(lt(t,{t_out}),({t_out}-t)/0.35,0))))")
-        y = s.get("text_y", "h*0.70")
-        chain += (f";[{last}]drawtext=fontfile={FONT}:textfile={tf}:fontsize={s.get('size', 66)}:"
-                  f"fontcolor=white:line_spacing=14:text_align=C:x=(w-text_w)/2:y={y}:"
+        y = s.get("text_y", "h*0.72-text_h/2")
+        longest = max(len(l) for l in s["text"].split("\n"))
+        size = s.get("size", int(min(84, 940 / (0.66 * longest))))
+        chain += (f";[{last}]drawtext=fontfile={FONT}:textfile={tf}:fontsize={size}:"
+                  f"fontcolor=white:line_spacing=20:text_align=C:x=(w-text_w)/2:y={y}:"
                   f"shadowcolor=black@0.75:shadowx=0:shadowy=4:borderw=3:bordercolor=black@0.35:"
                   f"alpha='{alpha}'[v1]")
         last = "v1"
