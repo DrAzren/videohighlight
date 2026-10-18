@@ -1,16 +1,19 @@
 """Generate an original, royalty-free cinematic orchestral score timed to the
-Forum Intelektual Diraja highlight film (55.5 s).
+Forum Intelektual Diraja highlight film (75.5 s).
 
 Arc (seconds):
-  0.0 - 5.5   hook      : low D pedal, high string harmonics, sparse piano, swell
-  5.5         IMPACT    : timpani + low boom + full string/horn chord
-  5.5 - 10.5  titles    : Bm - G   strings + soft piano arpeggio
-  10.5 - 20.5 occasion  : Bm G D A  spiccato ostinato, timpani pulse, horns
-  20.5 - 25.5 main      : G D      + choir, horn theme
-  25.5 - 33.0 speech    : A Bm G   sustained bed only (ducked in the final mix)
-  33.0 - 35.5 rise      : A(sus)   timpani roll + riser into the payoff
-  35.5 - 48.0 payoff    : D A Bm G A  full theme, choir, crescendo
-  48.0 - 55.5 closing   : D G D    warm piano + soft strings, final resolution
+  0.0 - 5.5   hook      : low D pedal, high string harmonics, sparse piano, soft swell
+  5.5 - 13.0  journey   : D A G    warm piano ostinato, pizzicato pulse, light ticks
+  13.0 - 18.0 rehearsal : Bm G     hushed harmonics, piano motif, riser into the impact
+  18.0        IMPACT    : timpani + low boom + full string/horn chord
+  18.0 - 23.0 titles    : Bm - G   strings + soft piano arpeggio
+  23.0 - 30.5 occasion  : Bm G D   spiccato ostinato, timpani pulse, horns
+  30.5 - 35.5 main      : G D      + choir, horn theme
+  35.5 - 40.5 speech    : A Bm     sustained bed only (ducked in the final mix)
+  40.5 - 43.0 rise      : A(sus)   held back until the quote ends, then roll + riser
+  43.0 - 55.5 payoff    : D A Bm G A  full theme, choir, crescendo
+  55.5 - 65.5 personal  : D Bm G A warm strings, piano melody, gentle pulse
+  65.5 - 75.5 closing   : D G D    piano + soft strings, final resolution
 
 96 BPM, bars of 2.5 s anchored at 5.5 s, D major.
 Usage: python3 make_score.py OUT.wav
@@ -23,7 +26,7 @@ from scipy.signal import butter, sosfilt, fftconvolve
 SR = 48000
 BEAT = 0.625
 BAR = 4 * BEAT
-END = 55.5
+END = 75.5
 N = int((END + 0.5) * SR)
 rng = np.random.default_rng(11)
 out_path = sys.argv[1] if len(sys.argv) > 1 else "score.wav"
@@ -238,12 +241,54 @@ add("strings", drone(38, 5.8, att=2.5), 0.0, 0.14)
 add("strings", np.stack([harmonics(81, 5.3), harmonics(86, 5.3)], 1) * 0.5, 0.4, 0.22)
 for tt, m in ((0.9, 69), (2.3, 74), (3.6, 78), (4.6, 76)):
     add("piano", piano(m, 1.6, 0.45), tt, 0.26, 0.2)
-add("fx", cymbal(2.4, swell=True), 3.1, 0.5)
-add("fx", riser(2.4), 3.1, 0.35)
-add("choir", choir([62, 69], 4.5, att=2.5, rel=0.4), 1.0, 0.18)
+add("fx", cymbal(2.4, swell=True), 3.1, 0.25)
+add("choir", choir([62, 69], 4.5, att=2.5, rel=0.8), 1.0, 0.18)
 
-# ---- 5.5 impact + titles ------------------------------------------------------
-T0 = 5.5
+
+def pizz(m):
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    s = sum(np.sin(2 * np.pi * hz(m) * k * t) * 0.6 ** k for k in range(1, 6))
+    return s * np.exp(-t * 9) * env(n, 0.003, 0.1)
+
+
+def tick():
+    n = int(0.08 * SR)
+    return hp(rng.standard_normal(n), 6000) * np.exp(-np.arange(n) / SR * 70)
+
+
+# ---- 5.5 - 13.0 journey -----------------------------------------------------------------
+TJ = 5.5
+for i, name in enumerate(("D", "A", "G")):
+    sv, hv, bass = CH[name]
+    t = TJ + i * BAR
+    add("strings", strings(sv[1:5], BAR, att=0.5, rel=0.6, bright=1900), t, 0.38 + 0.06 * i)
+    add("strings", drone(bass, BAR, att=0.2, rel=0.4), t, 0.3)
+    for k in range(8):                                  # travelling piano ostinato, 8ths
+        m = ARP[name][[0, 2, 1, 3, 0, 2, 1, 3][k]] + 12
+        add("piano", piano(m, BEAT * 0.8, 0.4 + 0.06 * (k % 4 == 0)), t + k * BEAT / 2, 0.24,
+            0.25 if k % 2 else -0.2)
+    for b in range(4):
+        add("strings", pizz(bass + 12), t + b * BEAT, 0.3, -0.3)
+        add("perc", tick(), t + b * BEAT + BEAT / 2, 0.12 + 0.03 * i, 0.4)
+
+# ---- 13.0 - 18.0 rehearsal ------------------------------------------------------------------
+TR = 13.0
+for i, name in enumerate(("Bm", "G")):
+    sv, hv, bass = CH[name]
+    t = TR + i * BAR
+    add("strings", strings(sv[1:4], BAR, att=0.8, rel=0.6, bright=1400), t, 0.32)
+    add("strings", drone(bass, BAR, att=0.4, rel=0.4), t, 0.28)
+    add("strings", np.stack([harmonics(hv[2] + 12, BAR), harmonics(hv[1] + 24, BAR)], 1) * 0.5, t, 0.16)
+    for k, m in enumerate((ARP[name][3] + 12, ARP[name][1] + 12, ARP[name][2] + 12)):
+        add("piano", piano(m, BEAT * 1.6, 0.42), t + k * BEAT * 1.33, 0.26, 0.2)
+    for b in range(4):
+        add("perc", tick(), t + b * BEAT, 0.1 + 0.04 * i, -0.3)
+add("fx", riser(BAR), TR + BAR, 0.5)
+add("fx", cymbal(BAR, swell=True), TR + BAR, 0.5)
+
+# ---- 18.0 impact + titles ------------------------------------------------------
+T0 = 18.0
 add("perc", boom(), T0, 0.9)
 add("perc", timpani(35, 1.0), T0, 0.8)
 add("perc", timpani(47, 0.7), T0 + 0.01, 0.45)
@@ -260,8 +305,8 @@ for i, (name, bars) in enumerate((("Bm", 1), ("G", 1))):
             0.3 if k % 2 else -0.1)
 
 # ---- 10.5 - 20.5 occasion ---------------------------------------------------
-T1 = 10.5
-for i, name in enumerate(("Bm", "G", "D", "A")):
+T1 = 23.0
+for i, name in enumerate(("Bm", "G", "D")):
     sv, hv, bass = CH[name]
     t = T1 + i * BAR
     lvl = 0.55 + 0.08 * i
@@ -277,11 +322,11 @@ for i, name in enumerate(("Bm", "G", "D", "A")):
         add("perc", timpani(bass + 12 if bass < 36 else bass, 0.5 + 0.08 * i), t + b * BEAT, 0.42)
     if i >= 2:
         add("perc", timpani(bass + 12 if bass < 36 else bass, 0.35), t + 3.5 * BEAT, 0.3)
-add("fx", riser(BAR), T1 + 3 * BAR, 0.4)
-add("fx", cymbal(BAR, swell=True), T1 + 3 * BAR, 0.4)
+add("fx", riser(BAR), T1 + 2 * BAR, 0.4)
+add("fx", cymbal(BAR, swell=True), T1 + 2 * BAR, 0.4)
 
 # ---- 20.5 - 25.5 main ---------------------------------------------------------------
-T2 = 20.5
+T2 = 30.5
 add("perc", timpani(31 + 12, 0.85), T2, 0.6)
 add("fx", cymbal(3.5), T2, 0.3)
 HORN_THEME = [  # (bar, beat, beats, midi)
@@ -307,8 +352,8 @@ for bar, beat, beats, m in HORN_THEME:
         T2 + bar * BAR + beat * BEAT, 0.42, -0.15)
 
 # ---- 25.5 - 33.0 speech bed (sustained, no percussion) -----------------------------
-T3 = 25.5
-for i, name in enumerate(("A", "Bm", "G")):
+T3 = 35.5
+for i, name in enumerate(("A", "Bm")):
     sv, hv, bass = CH[name]
     t = T3 + i * BAR
     add("strings", strings(sv[1:5], BAR, att=0.9, rel=1.0, bright=1600), t, 0.55)
@@ -317,19 +362,19 @@ for i, name in enumerate(("A", "Bm", "G")):
         add("piano", piano(m, BEAT * 3, 0.32), t + k * BEAT * 1.33, 0.2, 0.25)
 
 # ---- 33.0 - 35.5 rise -----------------------------------------------------------------
-T4 = 33.0
+T4 = 40.5                                               # the quote runs to ~41.3 s
 sv, hv, bass = CH["As"]
-add("strings", strings(sv, BAR * 0.5, att=1.0, rel=0.1), T4, 0.6)
+add("strings", strings(sv, BAR * 0.5, att=1.0, rel=0.1), T4, 0.5)
 sv, hv, bass = CH["A"]
 add("strings", strings(sv, BAR * 0.5, att=0.2, rel=0.3), T4 + BAR * 0.5, 0.75)
-add("brass", horn(hv, BAR, att=1.5, rel=0.2), T4, 0.35)
-for k in range(24):                                     # timpani roll crescendo
-    add("perc", timpani(45, 0.18 + 0.03 * k), T4 + k * BAR / 24, 0.3)
-add("fx", riser(BAR), T4, 0.6)
-add("fx", cymbal(BAR, swell=True), T4, 0.55)
+add("brass", horn(hv, BAR * 0.6, att=1.0, rel=0.2), T4 + BAR * 0.4, 0.35)
+for k in range(16):                                     # timpani roll crescendo, last 1.5 s
+    add("perc", timpani(45, 0.2 + 0.04 * k), T4 + 1.0 + k * 1.5 / 16, 0.3)
+add("fx", riser(1.6), T4 + 0.9, 0.6)
+add("fx", cymbal(1.6, swell=True), T4 + 0.9, 0.55)
 
 # ---- 35.5 - 48.0 payoff ----------------------------------------------------------------
-T5 = 35.5
+T5 = 43.0
 PROG = ("D", "A", "Bm", "G", "A")
 THEME = [  # (bar, beat, beats, midi) - violins, doubled by horn an octave below
     (0, 0, 1, 69), (0, 1, 1, 74), (0, 2, 2, 78),
@@ -369,8 +414,33 @@ for bar, beat, beats, m in THEME:
     add("strings", strings([m, m + 12], d * 0.98, att=0.05, rel=0.35, bright=4200, voices=5), t, 0.5)
     add("brass", horn([m - 12], d * 0.98, att=0.08, rel=0.3), t, 0.3, -0.25)
 
-# ---- 48.0 - 55.5 closing ------------------------------------------------------------------
-T6 = 48.0
+# ---- 55.5 - 65.5 personal moments -----------------------------------------------------------
+TP = 55.5
+MEL_P = [  # (bar, beat, beats, midi) - gentle piano melody
+    (0, 0, 2, 78), (0, 2, 1, 76), (0, 3, 1, 74),
+    (1, 0, 3, 74), (1, 3, 1, 73),
+    (2, 0, 2, 71), (2, 2, 1, 74), (2, 3, 1, 79),
+    (3, 0, 3, 76), (3, 3, 1, 73),
+]
+add("perc", timpani(38, 0.6), TP, 0.4)
+add("fx", cymbal(4.0), TP, 0.25)
+for i, name in enumerate(("D", "Bm", "G", "A")):
+    sv, hv, bass = CH[name]
+    t = TP + i * BAR
+    add("strings", strings(sv, BAR, att=0.35, rel=0.7, bright=2200), t, 0.5)
+    add("choir", choir(hv, BAR, att=0.6, rel=0.8), t, 0.2)
+    add("strings", drone(bass, BAR, att=0.1, rel=0.4), t, 0.36)
+    for k in range(8):
+        m = ARP[name][[0, 1, 2, 1, 3, 2, 1, 2][k]]
+        add("piano", piano(m, BEAT * 0.9, 0.34), t + k * BEAT / 2, 0.16, -0.25)
+    for b in (0, 2):
+        add("perc", timpani(bass + 12 if bass < 36 else bass, 0.4), t + b * BEAT, 0.28)
+for bar, beat, beats, m in MEL_P:
+    add("piano", piano(m, beats * BEAT * 0.95, 0.62), TP + bar * BAR + beat * BEAT, 0.42, 0.15)
+add("fx", cymbal(BAR, swell=True), TP + 3 * BAR, 0.35)
+
+# ---- 65.5 - 75.5 closing ------------------------------------------------------------------
+T6 = 65.5
 add("perc", timpani(38, 0.7), T6, 0.45)
 add("fx", cymbal(5.0), T6, 0.22)
 add("choir", choir([62, 66, 69, 74], BAR * 1.2, att=0.05, rel=2.0), T6, 0.35)
@@ -388,6 +458,8 @@ PIANO_END = [  # (time offset, midi, dur, vel)
 for dt, m, d, v in PIANO_END:
     add("piano", piano(m, d, v), T6 + dt, 0.6, 0.1 if m > 65 else -0.15)
 add("strings", strings([55, 62, 67, 71], BAR, att=0.8, rel=0.8, bright=1700), T6 + BAR, 0.32)
+add("strings", strings([50, 57, 62, 64, 69], BAR * 2.2, att=1.5, rel=1.5, bright=1500), T6 + 4.6, 0.36)
+add("piano", piano(86, 2.5, 0.3), T6 + 7.6, 0.3, 0.2)
 
 
 # ---- mix + reverb --------------------------------------------------------------------------------

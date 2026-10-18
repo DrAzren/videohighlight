@@ -59,11 +59,14 @@ def is_video(s):
 # ---------------------------------------------------------------------------- audio
 def load_audio(src, start, dur, speech):
     af = "aresample=48000,aformat=channel_layouts=stereo"
-    if speech:   # hall PA + phone mic: trim rumble/hiss, gentle denoise, presence, level
+    path = SRC / src
+    if src.endswith(".wav"):                 # already cleaned by tools/edit_speech.py
+        path = WORK / src
+    elif speech:   # hall PA + phone mic: trim rumble/hiss, gentle denoise, presence, level
         af += (",highpass=f=95,lowpass=f=9000,afftdn=nr=10:nf=-42,"
                "equalizer=f=280:t=q:w=1:g=-2.5,equalizer=f=3200:t=q:w=1.3:g=3,"
                "acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=2")
-    r = run(["ffmpeg", "-v", "error", "-ss", str(start), "-t", str(dur), "-i", str(SRC / src),
+    r = run(["ffmpeg", "-v", "error", "-ss", str(start), "-t", str(dur), "-i", str(path),
              "-af", af, "-f", "f32le", "-"])
     x = np.frombuffer(r.stdout, np.float32).reshape(-1, 2).astype(np.float64)
     rms = np.sqrt((x ** 2).mean()) + 1e-9
@@ -202,6 +205,9 @@ class VideoReader:
 class PhotoReader:
     def __init__(self, s, idx):
         im = ImageOps.exif_transpose(Image.open(SRC / s["src"])).convert("RGB")
+        if "trim" in s:                          # [left, top, right, bottom] fractions, e.g. drop a watermark
+            l, t, r, b = s["trim"]
+            im = im.crop((int(l * im.width), int(t * im.height), int((1 - r) * im.width), int((1 - b) * im.height)))
         tmp = WORK / f"photo_{idx:02d}.png"
         im.save(tmp)
         r = run(["ffmpeg", "-v", "error", "-i", str(tmp), "-vf", f"{LOOK},format=rgb24",
