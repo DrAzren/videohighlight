@@ -239,9 +239,9 @@ ARP = {"D": [62, 66, 69, 74], "Bm": [59, 62, 66, 71], "G": [59, 62, 67, 71], "A"
 add("strings", drone(26, 5.8, att=2.0), 0.0, 0.3)
 add("strings", drone(38, 5.8, att=2.5), 0.0, 0.14)
 add("strings", np.stack([harmonics(81, 5.3), harmonics(86, 5.3)], 1) * 0.5, 0.4, 0.22)
-for tt, m in ((0.9, 69), (2.3, 74), (3.6, 78), (4.6, 76)):
+for tt, m in ((0.9, 69), (2.3, 74), (4.45, 78), (5.0, 76)):   # clear of "memulakan bicara" (~3.3-4.35 s)
     add("piano", piano(m, 1.6, 0.45), tt, 0.26, 0.2)
-add("fx", cymbal(2.4, swell=True), 3.1, 0.25)
+add("fx", cymbal(1.2, swell=True), 4.3, 0.25)
 add("choir", choir([62, 69], 4.5, att=2.5, rel=0.8), 1.0, 0.18)
 
 

@@ -13,8 +13,9 @@ For every entry in EDL "speech_edits":
    the phrase peak, measured on a fully denoised copy so residual hall noise cannot
    mask a pause) are shortened to `gap`, with 30 ms equal-power crossfades at
    every join, so words follow each other naturally. Words are never cut or reordered.
-3. Voice polish: rumble cut, de-mud, presence and air lift, gentle de-ess, levelling
-   compression and a very short room so the cuts stay seamless.
+3. Voice polish: rumble cut, de-mud, presence and air lift and levelling compression
+   (a de-esser and short room were tried and dropped: they blurred consonants, e.g.
+   "bicara" was heard as "bincangan").
 Writes WORK_DIR/speech_<name>.wav (48 kHz stereo) and prints every cut it made.
 """
 import json
@@ -39,9 +40,7 @@ POLISH = ("highpass=f=85:p=2,afftdn=nr=8:nf=-38:tn=1,"
           "equalizer=f=650:t=q:w=1.5:g=-1.5,"
           "equalizer=f=3400:t=q:w=1.4:g=3,"
           "highshelf=f=9000:g=2,"
-          "deesser=i=0.35:m=0.5:f=0.55,"
-          "acompressor=threshold=-26dB:ratio=3:attack=6:release=120:makeup=3,"
-          "aecho=0.8:0.9:23|37:0.07|0.05,"
+          "acompressor=threshold=-26dB:ratio=2.5:attack=8:release=140:makeup=3,"
           "alimiter=limit=0.89")
 
 

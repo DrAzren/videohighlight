@@ -104,8 +104,11 @@ def mix_audio():
     end = int(DUR * SR)
     mix[end - fo:end] *= np.linspace(1, 0, fo)[:, None] ** 1.5
     mix = mix[:end]
+    peak = np.abs(mix).max()
+    if peak > 0.97:                          # leave headroom instead of clipping; loudnorm sets the level
+        mix *= 0.97 / peak
     raw = WORK / "mix_raw.wav"
-    wavfile.write(raw, SR, (np.clip(mix, -1, 1) * 32767).astype(np.int16))
+    wavfile.write(raw, SR, (mix * 32767).astype(np.int16))
     # two-pass loudness normalisation
     r = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(raw), "-af",
                         "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
