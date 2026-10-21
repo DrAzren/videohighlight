@@ -86,28 +86,52 @@
    "amb": 0.25
   },
   {
-   "id": "s05",
+   "id": "b01",
    "t": 5.0,
-   "dur": 1.0,
-   "src": "c10",
-   "ms": 2.0,
+   "dur": 0.5,
+   "src": "c07",
+   "ms": 0.5,
    "speed": 1.0,
    "move": "push",
    "in": "whip_l",
-   "note": "booth team laughing with a visitor",
-   "amb": 0.25
+   "note": "outdoor screening booth at the entrance, visitors at the table",
+   "amb": 0.3
   },
   {
-   "id": "s06",
+   "id": "b02",
+   "t": 5.5,
+   "dur": 0.5,
+   "src": "c04",
+   "ms": 3.4,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "Klinik booth banner with Dr Azren",
+   "amb": 0.3
+  },
+  {
+   "id": "b03",
    "t": 6.0,
-   "dur": 1.0,
-   "src": "c22",
-   "ms": 3.3,
-   "speed": 1.3,
-   "move": "drift_r",
+   "dur": 0.5,
+   "src": "c09",
+   "ms": 0.2,
+   "speed": 1.0,
+   "move": "push",
    "in": "whip_r",
-   "note": "packed hall, wide",
-   "amb": 0.25
+   "note": "screening booth by the glass wall",
+   "amb": 0.3
+  },
+  {
+   "id": "b04",
+   "t": 6.5,
+   "dur": 0.5,
+   "src": "c06",
+   "ms": 2.5,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "booth team helping visitors",
+   "amb": 0.3
   },
   {
    "id": "s07",
@@ -146,15 +170,15 @@
    "amb": 0.7
   },
   {
-   "id": "s10",
+   "id": "b05",
    "t": 10.5,
    "dur": 1.0,
    "src": "c18",
-   "ms": 18.2,
+   "ms": 8.3,
    "speed": 1.0,
    "move": "punch",
    "in": "cut",
-   "note": "close smile in the audience",
+   "note": "Dr Azren engaging the audience, smiles all round",
    "amb": 0.35
   },
   {
@@ -267,16 +291,16 @@
    "amb": 0.25
   },
   {
-   "id": "s20",
+   "id": "b06",
    "t": 22.0,
    "dur": 1.0,
-   "src": "c26",
-   "ms": 10.5,
+   "src": "c07",
+   "ms": 3.0,
    "speed": 1.0,
    "move": "push",
    "in": "cut",
-   "note": "pen close-up",
-   "amb": 0.25
+   "note": "outdoor screening booth, visitors leaning in",
+   "amb": 0.35
   },
   {
    "id": "s21",
@@ -447,10 +471,20 @@
    "align": 0.21
   },
   {
+   "t": 5.5,
+   "name": "impact_soft",
+   "gain": 0.35
+  },
+  {
    "t": 6.0,
    "name": "whoosh",
    "gain": 0.7,
    "align": 0.21
+  },
+  {
+   "t": 6.5,
+   "name": "impact_soft",
+   "gain": 0.35
   },
   {
    "t": 7.0,
@@ -527,6 +561,11 @@
    "align": 0.21
   },
   {
+   "t": 16.0,
+   "name": "riser_short",
+   "gain": 0.55
+  },
+  {
    "t": 16.4,
    "name": "shutter",
    "gain": 0.85
@@ -537,11 +576,6 @@
    "gain": 0.35
   },
   {
-   "t": 16.0,
-   "name": "riser_short",
-   "gain": 0.55
-  },
-  {
    "t": 17.0,
    "name": "sparkle",
    "gain": 0.5
@@ -550,6 +584,11 @@
    "t": 20.0,
    "name": "sparkle",
    "gain": 0.25
+  },
+  {
+   "t": 22.0,
+   "name": "sparkle",
+   "gain": 0.2
   },
   {
    "t": 23.0,

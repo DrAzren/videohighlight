@@ -21,12 +21,14 @@ Higgsfield made just two abstract light-leak plates with no people in them.
 | s02 | 1.5–3.0 | c25 @ 5.8 | 1.0 | Dr Azren waving at the front, crowd behind | Zoom-through transition, settle |
 | s03 | 3.0–4.0 | c12 @ 0.0 | 1.3 | Venue atrium, people arriving | Whip pan, drift |
 | s04 | 4.0–5.0 | c05 @ 0.2 | 1.0 | "Saringan Kesihatan Mental" banner | Whip, push-in |
-| s05 | 5.0–6.0 | c10 @ 2.0 | 1.0 | Booth team laughing with a visitor | Whip, push-in |
-| s06 | 6.0–7.0 | c22 @ 3.3 | 1.3 | Packed hall, wide | Whip, drift |
+| b01 | 5.0–5.5 | c07 @ 0.5 | 1.0 | Outdoor screening booth at the entrance, visitors at the table | Whip, push-in |
+| b02 | 5.5–6.0 | c04 @ 3.4 | 1.0 | Klinik booth banner featuring Dr Azren | Cut on the beat, push-in |
+| b03 | 6.0–6.5 | c09 @ 0.2 | 1.0 | Screening booth by the glass wall | Whip, push-in |
+| b04 | 6.5–7.0 | c06 @ 2.5 | 1.0 | Booth team helping visitors | Cut on the beat, push-in |
 | s07 | 7.0–8.0 | c02 @ 10.0 | 1.0 | Dr Azren greeting a participant | Whip, push-in |
 | s08 | 8.0–9.0 | c19 @ 2.0 | 1.0 | Delivering the talk | Punch-in on the beat |
 | s09 | 9.0–10.5 | c18 @ 11.5 | 1.0 | Participants laughing as he walks the aisle | Flash, push. **LAUGH TOGETHER** |
-| s10 | 10.5–11.5 | c18 @ 18.2 | 1.0 | Close smile in the audience | Punch-in |
+| b05 | 10.5–11.5 | c18 @ 8.3 | 1.0 | Dr Azren engaging the audience, smiles all round | Punch-in |
 | s11 | 11.5–12.5 | c20 @ 9.0 | 1.0 | Talking to the full hall | Whip. **LEARN TOGETHER** + arrow |
 | s12 | 12.5–13.5 | c19 @ 8.0 | 1.0 | Gesture close | Punch-in |
 | s13 | 13.5–14.5 | c13 @ 3.8 | 1.0 | Ice-breaker, hands up | Whip, beat shake |
@@ -36,22 +38,23 @@ Higgsfield made just two abstract light-leak plates with no people in them.
 | s17 | 19.0–20.0 | c05 @ 11.8 | 1.0 | Booth team smiling and waving | Push |
 | s18 | 20.0–21.0 | c16 @ 7.0 | 1.0 | Stage applause, OSH Mega Day screen | Push |
 | s19 | 21.0–22.0 | c26 @ 0.3 | 1.0 | Book signing, wide | Push, blue leak |
-| s20 | 22.0–23.0 | c26 @ 10.5 | 1.0 | Pen close-up (match cut) | Push |
+| b06 | 22.0–23.0 | c07 @ 3.0 | 1.0 | Outdoor screening booth, visitors leaning in | Push |
 | s21 | 23.0–24.0 | c18 @ 17.0 | 1.0 | Dr Azren close with mic | Flash, punch-in |
 | s22 | 24.0–25.0 | c13 @ 5.0 | 1.0 | Crowd moving, the peak | Beat shake |
 | s23 | 25.0–27.0 | c26 @ 33.4 | 0.8 | Book handover, participant beaming | Flash. **EVERY CONVERSATION MATTERS.** |
 | s24 | 27.0–30.0 | photo c24 | still | Full-hall group photo | Blue leak, push-in toward the crowd. **Spread Positivity** + credit, fade to black 29.25–30 |
 
-Cuts are 1–1.5 s, with 2–3 s emotional holds (s16, s23, s24). Every cut lands on the 120 BPM grid
+The atmosphere section is a fast 0.5 s booth montage (seven screening-booth shots across the reel). Other cuts are 1–1.5 s, with 2–3 s emotional holds (s16, s23, s24). Every cut lands on the 120 BPM grid
 (beat = 0.5 s).
 
 ### Footage left out
 
 These clips were reviewed and dropped:
-- c04, c06–c09, c11: booth B-roll that is repetitive, backlit or ends in the floor
+- c08, c11: booth B-roll that repeats the shots already used
 - c15, c17, c21: wide, distant and mostly empty frames
 - c23: another speaker
-- the tail of c18 (camera pointing at the floor)
+- the tail of c18 (camera pointing at the floor) and c18 @ 18.2 (framed on the speaker's legs, replaced in v2)
+- c22 (wide hall) and the c26 pen close-up, swapped out in v2 to make room for the booth
 - the empty table at the end of c02
 
 Photos c27 and c28 (posed handover / screen photo) are good alternates for the ending.
