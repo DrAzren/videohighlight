@@ -1,0 +1,586 @@
+{
+ "title": "OSH Mega Day 2026 — Mental Health Can Be Fun (30s aftermovie)",
+ "album": "https://photos.app.goo.gl/KgPWsuoEcFJXqtQJA",
+ "canvas": {
+  "w": 1080,
+  "h": 1920,
+  "fps": 30
+ },
+ "duration": 30.0,
+ "bpm": 120,
+ "downbeat_offset": 1.0,
+ "sections": [
+  {
+   "name": "hook",
+   "start": 0.0,
+   "end": 3.0
+  },
+  {
+   "name": "atmosphere",
+   "start": 3.0,
+   "end": 8.0
+  },
+  {
+   "name": "best_moments",
+   "start": 8.0,
+   "end": 17.0
+  },
+  {
+   "name": "happy_montage",
+   "start": 17.0,
+   "end": 25.0
+  },
+  {
+   "name": "ending",
+   "start": 25.0,
+   "end": 30.0
+  }
+ ],
+ "shots": [
+  {
+   "id": "s01",
+   "t": 0.0,
+   "dur": 1.5,
+   "src": "c25",
+   "ms": 3.0,
+   "speed": 1.0,
+   "move": "crash_in",
+   "in": "flash",
+   "note": "whole hall cheering and waving at the camera",
+   "amb": 0.95
+  },
+  {
+   "id": "s02",
+   "t": 1.5,
+   "dur": 1.5,
+   "src": "c25",
+   "ms": 5.8,
+   "speed": 1.0,
+   "move": "settle",
+   "in": "zoom",
+   "note": "Dr Azren waving at the front with the crowd behind",
+   "amb": 0.6
+  },
+  {
+   "id": "s03",
+   "t": 3.0,
+   "dur": 1.0,
+   "src": "c12",
+   "ms": 0.0,
+   "speed": 1.3,
+   "move": "drift_l",
+   "in": "whip_l",
+   "note": "venue atrium, participants arriving",
+   "amb": 0.25
+  },
+  {
+   "id": "s04",
+   "t": 4.0,
+   "dur": 1.0,
+   "src": "c05",
+   "ms": 0.2,
+   "speed": 1.0,
+   "move": "push",
+   "in": "whip_r",
+   "note": "Saringan Kesihatan Mental banner",
+   "amb": 0.25
+  },
+  {
+   "id": "s05",
+   "t": 5.0,
+   "dur": 1.0,
+   "src": "c10",
+   "ms": 2.0,
+   "speed": 1.0,
+   "move": "push",
+   "in": "whip_l",
+   "note": "booth team laughing with a visitor",
+   "amb": 0.25
+  },
+  {
+   "id": "s06",
+   "t": 6.0,
+   "dur": 1.0,
+   "src": "c22",
+   "ms": 3.3,
+   "speed": 1.3,
+   "move": "drift_r",
+   "in": "whip_r",
+   "note": "packed hall, wide",
+   "amb": 0.25
+  },
+  {
+   "id": "s07",
+   "t": 7.0,
+   "dur": 1.0,
+   "src": "c02",
+   "ms": 10.0,
+   "speed": 1.0,
+   "move": "push",
+   "in": "whip_l",
+   "note": "Dr Azren greeting a participant",
+   "amb": 0.25
+  },
+  {
+   "id": "s08",
+   "t": 8.0,
+   "dur": 1.0,
+   "src": "c19",
+   "ms": 2.0,
+   "speed": 1.0,
+   "move": "punch",
+   "in": "cut",
+   "note": "Dr Azren delivering the talk",
+   "amb": 0.1
+  },
+  {
+   "id": "s09",
+   "t": 9.0,
+   "dur": 1.5,
+   "src": "c18",
+   "ms": 11.5,
+   "speed": 1.0,
+   "move": "push",
+   "in": "flash",
+   "note": "participants laughing as he walks the aisle",
+   "amb": 0.7
+  },
+  {
+   "id": "s10",
+   "t": 10.5,
+   "dur": 1.0,
+   "src": "c18",
+   "ms": 18.2,
+   "speed": 1.0,
+   "move": "punch",
+   "in": "cut",
+   "note": "close smile in the audience",
+   "amb": 0.35
+  },
+  {
+   "id": "s11",
+   "t": 11.5,
+   "dur": 1.0,
+   "src": "c20",
+   "ms": 9.0,
+   "speed": 1.0,
+   "move": "push",
+   "in": "whip_r",
+   "note": "talking to the full hall",
+   "amb": 0.12
+  },
+  {
+   "id": "s12",
+   "t": 12.5,
+   "dur": 1.0,
+   "src": "c19",
+   "ms": 8.0,
+   "speed": 1.0,
+   "move": "punch",
+   "in": "cut",
+   "note": "gesture close",
+   "amb": 0.1
+  },
+  {
+   "id": "s13",
+   "t": 13.5,
+   "dur": 1.0,
+   "src": "c13",
+   "ms": 3.8,
+   "speed": 1.0,
+   "move": "shake",
+   "in": "whip_l",
+   "note": "ice-breaker, hands up",
+   "amb": 0.45
+  },
+  {
+   "id": "s14",
+   "t": 14.5,
+   "dur": 1.0,
+   "src": "c14",
+   "ms": 10.2,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "ice-breaker movement",
+   "amb": 0.25
+  },
+  {
+   "id": "s15",
+   "t": 15.5,
+   "dur": 1.5,
+   "src": "c03",
+   "ms": 12.0,
+   "speed": 1.0,
+   "move": "push",
+   "in": "whip_r",
+   "freeze_at": 0.9,
+   "note": "laughing with a participant -> sticker freeze",
+   "amb": 0.25
+  },
+  {
+   "id": "s16",
+   "t": 17.0,
+   "dur": 2.0,
+   "src": "c02",
+   "ms": 11.0,
+   "speed": 0.6,
+   "move": "push_slow",
+   "in": "leak",
+   "note": "slow-motion laughter",
+   "amb": 0.5
+  },
+  {
+   "id": "s17",
+   "t": 19.0,
+   "dur": 1.0,
+   "src": "c05",
+   "ms": 11.8,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "booth team smiling and waving",
+   "amb": 0.35
+  },
+  {
+   "id": "s18",
+   "t": 20.0,
+   "dur": 1.0,
+   "src": "c16",
+   "ms": 7.0,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "stage applause, OSH Mega Day screen",
+   "amb": 0.85
+  },
+  {
+   "id": "s19",
+   "t": 21.0,
+   "dur": 1.0,
+   "src": "c26",
+   "ms": 0.3,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "book signing, wide",
+   "amb": 0.25
+  },
+  {
+   "id": "s20",
+   "t": 22.0,
+   "dur": 1.0,
+   "src": "c26",
+   "ms": 10.5,
+   "speed": 1.0,
+   "move": "push",
+   "in": "cut",
+   "note": "pen close-up",
+   "amb": 0.25
+  },
+  {
+   "id": "s21",
+   "t": 23.0,
+   "dur": 1.0,
+   "src": "c18",
+   "ms": 17.0,
+   "speed": 1.0,
+   "move": "punch",
+   "in": "flash",
+   "note": "Dr Azren close with mic",
+   "amb": 0.12
+  },
+  {
+   "id": "s22",
+   "t": 24.0,
+   "dur": 1.0,
+   "src": "c13",
+   "ms": 5.0,
+   "speed": 1.0,
+   "move": "shake",
+   "in": "cut",
+   "note": "crowd moving, peak",
+   "amb": 0.4
+  },
+  {
+   "id": "s23",
+   "t": 25.0,
+   "dur": 2.0,
+   "src": "c26",
+   "ms": 33.4,
+   "speed": 0.8,
+   "move": "push_slow",
+   "in": "flash",
+   "note": "book handover, participant beaming",
+   "amb": 0.65
+  },
+  {
+   "id": "s24",
+   "t": 27.0,
+   "dur": 3.0,
+   "src": "c24",
+   "still": true,
+   "move": "kenburns",
+   "in": "leak",
+   "note": "full-hall group photo",
+   "amb": 0.0
+  }
+ ],
+ "texts": [
+  {
+   "id": "hook",
+   "t": 0.15,
+   "dur": 2.75,
+   "lines": [
+    "MENTAL HEALTH",
+    "CAN BE FUN!"
+   ],
+   "heart": true,
+   "style": "hook"
+  },
+  {
+   "id": "laugh",
+   "t": 9.05,
+   "dur": 1.9,
+   "lines": [
+    "LAUGH",
+    "TOGETHER"
+   ],
+   "style": "kinetic",
+   "accent": "yellow"
+  },
+  {
+   "id": "learn",
+   "t": 11.55,
+   "dur": 1.9,
+   "lines": [
+    "LEARN",
+    "TOGETHER"
+   ],
+   "style": "kinetic",
+   "accent": "blue"
+  },
+  {
+   "id": "grow",
+   "t": 14.55,
+   "dur": 1.9,
+   "lines": [
+    "GROW",
+    "TOGETHER"
+   ],
+   "style": "kinetic",
+   "accent": "orange"
+  },
+  {
+   "id": "matters",
+   "t": 25.25,
+   "dur": 2.6,
+   "lines": [
+    "EVERY CONVERSATION",
+    "MATTERS."
+   ],
+   "style": "elegant"
+  },
+  {
+   "id": "spread",
+   "t": 27.4,
+   "dur": 2.55,
+   "lines": [
+    "Spread Positivity"
+   ],
+   "heart": true,
+   "style": "script"
+  },
+  {
+   "id": "credit",
+   "t": 27.9,
+   "dur": 2.05,
+   "lines": [
+    "Dr Fakrul Azren | Mental Health Speaker"
+   ],
+   "style": "credit"
+  }
+ ],
+ "sfx": [
+  {
+   "t": 0.0,
+   "name": "impact_big",
+   "gain": 1.0
+  },
+  {
+   "t": 0.18,
+   "name": "pop",
+   "gain": 0.5
+  },
+  {
+   "t": 0.48,
+   "name": "pop",
+   "gain": 0.5
+  },
+  {
+   "t": 0.78,
+   "name": "pop",
+   "gain": 0.55
+  },
+  {
+   "t": 1.5,
+   "name": "whoosh",
+   "gain": 0.55,
+   "align": 0.21
+  },
+  {
+   "t": 3.0,
+   "name": "whoosh",
+   "gain": 0.7,
+   "align": 0.21
+  },
+  {
+   "t": 4.0,
+   "name": "whoosh",
+   "gain": 0.7,
+   "align": 0.21
+  },
+  {
+   "t": 5.0,
+   "name": "whoosh",
+   "gain": 0.7,
+   "align": 0.21
+  },
+  {
+   "t": 6.0,
+   "name": "whoosh",
+   "gain": 0.7,
+   "align": 0.21
+  },
+  {
+   "t": 7.0,
+   "name": "whoosh",
+   "gain": 0.7,
+   "align": 0.21
+  },
+  {
+   "t": 8.0,
+   "name": "impact_soft",
+   "gain": 0.7
+  },
+  {
+   "t": 9.0,
+   "name": "impact_soft",
+   "gain": 0.8
+  },
+  {
+   "t": 9.1,
+   "name": "pop",
+   "gain": 0.6
+  },
+  {
+   "t": 9.35,
+   "name": "pop",
+   "gain": 0.55
+  },
+  {
+   "t": 10.5,
+   "name": "impact_soft",
+   "gain": 0.5
+  },
+  {
+   "t": 11.5,
+   "name": "whoosh",
+   "gain": 0.6,
+   "align": 0.21
+  },
+  {
+   "t": 11.6,
+   "name": "pop",
+   "gain": 0.6
+  },
+  {
+   "t": 11.85,
+   "name": "pop",
+   "gain": 0.55
+  },
+  {
+   "t": 12.5,
+   "name": "impact_soft",
+   "gain": 0.5
+  },
+  {
+   "t": 13.5,
+   "name": "whoosh",
+   "gain": 0.6,
+   "align": 0.21
+  },
+  {
+   "t": 14.6,
+   "name": "pop",
+   "gain": 0.6
+  },
+  {
+   "t": 14.85,
+   "name": "pop",
+   "gain": 0.55
+  },
+  {
+   "t": 15.5,
+   "name": "whoosh",
+   "gain": 0.6,
+   "align": 0.21
+  },
+  {
+   "t": 16.4,
+   "name": "shutter",
+   "gain": 0.85
+  },
+  {
+   "t": 16.5,
+   "name": "sparkle",
+   "gain": 0.35
+  },
+  {
+   "t": 16.0,
+   "name": "riser_short",
+   "gain": 0.55
+  },
+  {
+   "t": 17.0,
+   "name": "sparkle",
+   "gain": 0.5
+  },
+  {
+   "t": 20.0,
+   "name": "sparkle",
+   "gain": 0.25
+  },
+  {
+   "t": 23.0,
+   "name": "impact_soft",
+   "gain": 0.6
+  },
+  {
+   "t": 25.0,
+   "name": "impact_soft",
+   "gain": 0.75
+  },
+  {
+   "t": 25.3,
+   "name": "sparkle",
+   "gain": 0.45
+  },
+  {
+   "t": 27.0,
+   "name": "whoosh",
+   "gain": 0.35,
+   "align": 0.21
+  },
+  {
+   "t": 27.45,
+   "name": "sparkle",
+   "gain": 0.5
+  },
+  {
+   "t": 27.95,
+   "name": "pop",
+   "gain": 0.35
+  }
+ ]
+}

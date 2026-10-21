@@ -3,3 +3,10 @@ work/
 *.mov
 *.zip
 __pycache__/
+!release/*.mp4
+!reel/assets/fx/leak_*.mp4
+reel/assets/fx/*_raw.mp4
+reel/renders/
+reel/.hyperframes/
+reel/assets/audio/mix_raw.wav
+node_modules/
