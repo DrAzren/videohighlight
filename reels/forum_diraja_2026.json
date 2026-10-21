@@ -60,24 +60,25 @@
    }
   },
   {
-   "src": "hf_02.mp4",
    "at": 7.0,
    "dur": 1.5,
-   "in": 0.1,
-   "speed": 0.85,
-   "zoom": [
-    1.02,
-    1.07
-   ],
    "trans": [
     "cut",
     0
    ],
-   "note": "journey: in flight, wing through the window",
+   "src": "hf4_flight.mp4",
+   "in": 0.3,
+   "speed": 0.8,
+   "zoom": [
+    1.0,
+    1.05
+   ],
    "orig": {
-    "src": "016.mp4",
-    "in": 3.0
-   }
+    "src": "013.mp4",
+    "in": 3.6
+   },
+   "note": "journey: son colouring on the flight",
+   "stab": false
   },
   {
    "src": "hf_03.mp4",
@@ -100,24 +101,25 @@
    }
   },
   {
-   "src": "hf_04.mp4",
    "at": 10.0,
    "dur": 1.25,
-   "in": 0.2,
-   "speed": 0.8,
-   "zoom": [
-    1.0,
-    1.05
-   ],
    "trans": [
     "cut",
     0
    ],
-   "note": "journey: the car waiting, door opening",
+   "src": "hf4_cardoor.mp4",
+   "in": 0.15,
+   "speed": 1.15,
+   "zoom": [
+    1.0,
+    1.04
+   ],
    "orig": {
     "src": "040.mp4",
-    "in": 3.5
-   }
+    "in": 4.7
+   },
+   "note": "journey: opening the car door",
+   "stab": false
   },
   {
    "src": "hf_05.mp4",
@@ -158,23 +160,26 @@
    }
   },
   {
-   "src": "hf_07.mp4",
    "at": 14.75,
    "dur": 1.5,
-   "in": 0.2,
-   "zoom": [
-    1.0,
-    1.05
-   ],
    "trans": [
     "cut",
     0
    ],
-   "note": "rehearsal: crew on stage",
+   "src": "hf4_rehearsal.mp4",
+   "in": 0.05,
+   "speed": 0.85,
+   "zoom": [
+    1.0,
+    1.04
+   ],
+   "cx": 0.5,
    "orig": {
     "src": "028.mp4",
-    "in": 1.0
-   }
+    "in": 4.0
+   },
+   "note": "rehearsal: man in white speaking (camera locked with tools/lock_shot.py)",
+   "stab": false
   },
   {
    "src": "hf_08.mp4",
@@ -212,23 +217,25 @@
    "note": "official wide: full hall"
   },
   {
-   "src": "hf_10.mp4",
    "at": 23.0,
    "dur": 1.5,
-   "in": 0.2,
-   "zoom": [
-    1.0,
-    1.05
-   ],
    "trans": [
     "smoothleft",
     0.3
    ],
-   "note": "the dressed stage",
+   "src": "hf4_panel.mp4",
+   "in": 0.2,
+   "zoom": [
+    1.0,
+    1.08
+   ],
+   "cy": 0.62,
    "orig": {
-    "src": "067.mp4",
-    "in": 2.7
-   }
+    "src": "075.mp4",
+    "in": 79.2
+   },
+   "note": "the panel standing on stage before taking their seats",
+   "stab": false
   },
   {
    "src": "115.jpg",
@@ -315,24 +322,25 @@
    "cx": 0.74
   },
   {
-   "src": "hf3_q1.mp4",
-   "in": 0.2,
    "at": 33.0,
    "dur": 2.5,
-   "zoom": [
-    1.0,
-    1.05
-   ],
-   "stab": false,
    "trans": [
     "cut",
     0
    ],
+   "src": "hf4_speak2.mp4",
+   "in": 0.2,
+   "zoom": [
+    1.0,
+    1.05
+   ],
+   "cy": 0.45,
    "orig": {
-    "src": "N146.mp4",
-    "in": 46.0
+    "src": "M148.mp4",
+    "in": 72.0
    },
-   "note": "Q&A: first question from the floor (livestream, Topaz 4K)"
+   "note": "speaking on stage (second-best take, livestream)",
+   "stab": false
   },
   {
    "src": "hf_16.mp4",
