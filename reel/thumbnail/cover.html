@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OSH Mega Day 2026 cover</title>
+    <style>
+      @font-face { font-family: "Poppins"; font-weight: 900; src: url("../assets/fonts/Poppins-Black.ttf"); }
+      @font-face { font-family: "Poppins"; font-weight: 800; src: url("../assets/fonts/Poppins-ExtraBold.ttf"); }
+      @font-face { font-family: "Poppins"; font-weight: 600; src: url("../assets/fonts/Poppins-SemiBold.ttf"); }
+      @font-face { font-family: "Caveat"; font-weight: 400 700; src: url("../assets/fonts/Caveat.ttf"); }
+      :root { --blue: #2B6BFF; --navy: #0F2A6B; --deep: #1747C9; --yellow: #FFD23F; --orange: #FF9F5A; --paper: #FFFDF6; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { width: var(--w); height: var(--h); overflow: hidden; background: var(--navy); font-family: "Poppins", sans-serif; position: relative; }
+      .bg { position: absolute; inset: -30px; background: url("bg_crowd.jpg") center / cover; filter: blur(2.5px) saturate(1.15) brightness(0.95); }
+      .tint { position: absolute; inset: 0; background:
+        radial-gradient(ellipse 70% 45% at 70% 72%, rgba(255,210,63,0.30), rgba(255,210,63,0) 70%),
+        linear-gradient(to bottom, rgba(15,42,107,0.80) 0%, rgba(15,42,107,0.35) 38%, rgba(43,107,255,0.25) 62%, rgba(15,42,107,0.75) 100%); }
+      .rays { position: absolute; opacity: 0.32; }
+      .rays path { fill: var(--yellow); opacity: 0.55; }
+      .cut { position: absolute; filter: drop-shadow(9px 0 0 #fff) drop-shadow(-9px 0 0 #fff) drop-shadow(0 9px 0 #fff) drop-shadow(0 -9px 0 #fff) drop-shadow(0 24px 30px rgba(5,15,50,0.55)); }
+      .title { position: absolute; display: flex; flex-direction: column; }
+      .label { align-self: flex-start; background: var(--paper); padding: 0.14em 0.42em 0.04em; transform: rotate(-3deg); box-shadow: 0 0.12em 0 rgba(5,15,50,0.45);
+        clip-path: polygon(0 6%, 4% 0, 12% 5%, 22% 1%, 33% 6%, 45% 0, 57% 5%, 70% 1%, 82% 6%, 93% 0, 100% 5%, 99% 52%, 100% 96%, 90% 100%, 78% 95%, 66% 100%, 54% 95%, 41% 100%, 29% 95%, 17% 100%, 6% 95%, 0 100%, 1% 50%); }
+      .label span { white-space: nowrap; font-size: 0.8em; font-weight: 900; color: var(--deep); line-height: 1.1; display: block; }
+      .line2 { font-weight: 900; color: #fff; line-height: 1;
+        text-shadow: 0.04em 0.04em 0 var(--navy), -0.04em 0.04em 0 var(--navy), 0.04em -0.04em 0 var(--navy), -0.04em -0.04em 0 var(--navy), 0 0.05em 0 var(--navy), 0.05em 0 0 var(--navy), -0.05em 0 0 var(--navy), 0 -0.05em 0 var(--navy), 0 0.12em 0 var(--deep); }
+      .fun { display: flex; align-items: center; gap: 0.06em; }
+      .fun b { font-weight: 900; color: var(--yellow); line-height: 1.02; transform: rotate(4deg); display: block;
+        text-shadow: 0.03em 0.03em 0 var(--navy), -0.03em 0.03em 0 var(--navy), 0.03em -0.03em 0 var(--navy), -0.03em -0.03em 0 var(--navy), 0 0.035em 0 var(--navy), 0.035em 0 0 var(--navy), -0.035em 0 0 var(--navy), 0 -0.035em 0 var(--navy), 0 0.09em 0 var(--deep); }
+      .squig { position: absolute; overflow: visible; }
+      .squig path { fill: none; stroke: var(--orange); stroke-linecap: round; }
+      .tag { position: absolute; background: var(--yellow); padding: 0.22em 0.5em 0.12em; transform: rotate(-6deg); box-shadow: 0 0.16em 0 rgba(5,15,50,0.45);
+        clip-path: polygon(0 8%, 10% 0, 30% 6%, 50% 0, 70% 6%, 90% 0, 100% 8%, 99% 50%, 100% 92%, 90% 100%, 70% 94%, 50% 100%, 30% 94%, 10% 100%, 0 92%, 1% 50%); }
+      .tag span { display: block; font-weight: 900; color: var(--navy); letter-spacing: 0.04em; }
+      .name { position: absolute; display: flex; flex-direction: column; gap: 0.15em; }
+      .name b { font-weight: 900; color: #fff; line-height: 1.05; text-shadow: 0.04em 0.04em 0 var(--navy), -0.04em 0.04em 0 var(--navy), 0.04em -0.04em 0 var(--navy), -0.04em -0.04em 0 var(--navy), 0 0.09em 0 var(--blue); }
+      .name .pill { position: relative; align-self: flex-start; font-size: 0.5em; }
+      .pill { position: absolute; background: rgba(15,42,107,0.9); border: 0.08em solid rgba(255,255,255,0.92); border-radius: 2em; padding: 0.35em 0.9em 0.25em; color: #fff; font-weight: 600; white-space: nowrap; }
+      .script { position: absolute; font-family: "Caveat", cursive; font-weight: 700; color: #fff; transform: rotate(-4deg);
+        text-shadow: 0.03em 0.03em 0 var(--navy), -0.03em 0.03em 0 var(--navy), 0.03em -0.03em 0 var(--navy), -0.03em -0.03em 0 var(--navy), 0 0.08em 0 var(--blue); }
+      .spark, .heart { position: absolute; overflow: visible; }
+    </style>
+  </head>
+  <body>
+    <div class="bg"></div>
+    <div class="tint"></div>
+    <svg class="rays" id="rays" viewBox="-540 -540 1080 1080"><g></g></svg>
+    <img class="cut" id="cut" src="../assets/cut/s15_cut.png" alt="" />
+    <div class="title" id="title">
+      <div class="label"><span>MENTAL HEALTH</span></div>
+      <div class="line2">CAN BE</div>
+      <div class="fun"><b>FUN!</b><svg class="heart" style="position:relative" viewBox="-64 -64 128 128"><path d="M0,30 C-36,6 -58,-14 -48,-36 C-40,-54 -14,-56 0,-36 C14,-56 40,-54 48,-36 C58,-14 36,6 0,30 Z" fill="#2B6BFF" stroke="#fff" stroke-width="9" stroke-linejoin="round"/></svg></div>
+    </div>
+    <svg class="squig" id="squig" viewBox="0 0 600 70"><path d="M10 35 C90 0 140 70 220 35 C300 0 350 70 430 35 C500 5 550 60 590 37" /></svg>
+    <div class="tag" id="tag"><span>OSH MEGA DAY 2026</span></div>
+    <div class="script" id="script">Mind Matters: You're Not Alone</div>
+    <div class="name" id="name"><b>Dr Fakrul Azren</b><div class="pill">Mental Health Speaker</div></div>
+    <script>
+      // layout per format (set by ?f=9x16 | 16x9); all sizes in px of the target canvas
+      const f = new URLSearchParams(location.search).get("f") || "9x16";
+      const L = {
+        "9x16": { w: 1080, h: 1920, title: [70, 360, 116], squig: [110, 905, 560, 16], cut: [430, 860, 1080 * 0.8], rays: [860, 1250, 1800],
+                  tag: [60, 1230, 40], script: [70, 990, 66], name: [60, 1390, 58],
+                  sparks: [[930, 330, 70, "#FFD23F"], [990, 760, 44, "#fff"], [470, 1180, 40, "#fff"]] },
+        "16x9": { w: 1280, h: 720, title: [56, 64, 74], squig: [70, 430, 360, 12], cut: [800, 60, 1080 * 0.52], rays: [1030, 520, 1100],
+                  tag: [56, 548, 28], script: [64, 462, 40], name: [56, 610, 36],
+                  sparks: [[700, 58, 46, "#FFD23F"], [720, 330, 32, "#fff"]] },
+      }[f];
+      document.documentElement.style.setProperty("--w", L.w + "px");
+      document.documentElement.style.setProperty("--h", L.h + "px");
+      const at = (id, x, y, fs) => { const e = document.getElementById(id); e.style.left = x + "px"; e.style.top = y + "px"; if (fs) e.style.fontSize = fs + "px"; return e; };
+      at("title", ...L.title);
+      document.querySelector(".fun svg").style.width = document.querySelector(".fun svg").style.height = L.title[2] * 1.35 + "px";
+      document.querySelector(".fun b").style.fontSize = "2em";
+      const sq = at("squig", L.squig[0], L.squig[1]); sq.style.width = L.squig[2] + "px"; sq.querySelector("path").style.strokeWidth = L.squig[3] * 600 / L.squig[2];
+      const cut = at("cut", L.cut[0], L.cut[1]); cut.style.width = L.cut[2] + "px";
+      const rays = document.getElementById("rays"); rays.style.width = rays.style.height = L.rays[2] + "px";
+      rays.style.left = L.rays[0] - L.rays[2] / 2 + "px"; rays.style.top = L.rays[1] - L.rays[2] / 2 + "px";
+      rays.querySelector("g").innerHTML = Array.from({ length: 16 }, (_, k) => `<path d="M0 0 L1100 -70 L1100 70 Z" transform="rotate(${k * 22.5 + 6})"/>`).join("");
+      at("tag", ...L.tag); at("script", ...L.script); at("name", ...L.name);
+      for (const [x, y, s, c] of L.sparks)
+        document.body.insertAdjacentHTML("beforeend", `<svg class="spark" style="left:${x}px;top:${y}px;width:${s}px;height:${s}px" viewBox="-40 -40 80 80"><path d="M0,-38 C4,-8 8,-4 38,0 C8,4 4,8 0,38 C-4,8 -8,4 -38,0 C-8,-4 -4,-8 0,-38 Z" fill="${c}"/></svg>`);
+    </script>
+  </body>
+</html>
