@@ -76,14 +76,7 @@ Every conversation matters. Let's keep spreading positivity. 💙
 
 ---
 
-## Pilihan: talian sokongan (sesuai di akhir caption)
-
-Jika anda atau orang tersayang perlukan sokongan emosi, anda tidak keseorangan:
-📞 Talian HEAL (KKM): 15555
-📞 Befrienders KL (24 jam): 03-7627 2929
-
 ## Nota sebelum post
 
 - **Penganjur:** Skrin acara memaparkan logo Malaysia Airports dengan "SAVE THE DATE! OSH MEGA DAY 2026". Kalau mahu tag atau sebut penganjur, sahkan dulu nama dan akaun rasmi mereka.
-- **Talian sokongan:** Sahkan nombor masih aktif sebelum post.
 - **Hashtag:** Instagram paling berkesan dengan 5–15 hashtag yang relevan, jadi buang mana-mana yang tidak sesuai dengan audiens anda.
