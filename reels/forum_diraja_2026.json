@@ -315,21 +315,24 @@
    "cx": 0.74
   },
   {
-   "src": "hf_N146_speak.mp4",
+   "src": "hf3_q1.mp4",
+   "in": 0.2,
    "at": 33.0,
    "dur": 2.5,
-   "in": 0.4,
    "zoom": [
     1.0,
     1.05
    ],
-   "cy": 0.45,
    "stab": false,
    "trans": [
     "cut",
     0
    ],
-   "note": "livestream close-up speaking (Higgsfield Topaz 4K upscale)"
+   "orig": {
+    "src": "N146.mp4",
+    "in": 46.0
+   },
+   "note": "Q&A: first question from the floor (livestream, Topaz 4K)"
   },
   {
    "src": "hf_16.mp4",
@@ -535,45 +538,45 @@
    }
   },
   {
-   "src": "hf_26.mp4",
+   "src": "hf3_q2.mp4",
+   "in": 0.1,
    "at": 63.0,
    "dur": 2.5,
-   "in": 0.2,
-   "speed": 0.6,
    "zoom": [
     1.0,
     1.05
    ],
+   "stab": false,
    "trans": [
     "cut",
     0
    ],
-   "note": "smiling in the procession (slow motion)",
    "orig": {
-    "src": "106.mp4",
-    "in": 47.6
-   }
+    "src": "N146.mp4",
+    "in": 101.0
+   },
+   "note": "Q&A: second questioner at the floor mic, his line to Dr Fakrul"
   },
   {
-   "src": "hf_27.mp4",
+   "src": "hf3_close.mp4",
+   "in": 0.2,
    "at": 65.5,
    "dur": 10.0,
-   "in": 0.2,
-   "speed": 0.6,
    "zoom": [
     1.0,
-    1.08
+    1.06
    ],
    "cy": 0.45,
+   "stab": false,
    "trans": [
     "fade",
     0.8
    ],
-   "note": "closing: in the hall, songkok, gratitude",
    "orig": {
-    "src": "069.mp4",
-    "in": 0.2
-   }
+    "src": "M148.mp4",
+    "in": 33.0
+   },
+   "note": "closing: speaking on stage (livestream, Topaz 4K)"
   }
  ],
  "audio": [
@@ -636,6 +639,19 @@
     0.05,
     1.6
    ]
+  },
+  {
+   "src": "speech_q2.wav",
+   "in": 0,
+   "dur": 2.2,
+   "at": 63.2,
+   "gain": 1.25,
+   "fade": [
+    0.02,
+    0.08
+   ],
+   "speech": true,
+   "duck": 0.25
   }
  ],
  "music_gain": [
@@ -874,7 +890,7 @@
   },
   {
    "t0": 30.8,
-   "t1": 34.7,
+   "t1": 32.85,
    "scrim": "bottom",
    "lines": [
     {
@@ -887,23 +903,11 @@
      "color": "gold",
      "track": 0.1,
      "anim": "wipe"
-    },
-    {
-     "text": "MENTAL HEALTH SPEAKER",
-     "font": "Montserrat",
-     "weight": 600,
-     "size": 52,
-     "x": 0.088,
-     "y": 0.703,
-     "color": "ivory",
-     "track": 0.32,
-     "anim": "wipe",
-     "delay": 0.25
     }
    ],
    "bar": {
     "x": 0.085,
-    "y": 0.684,
+    "y": 0.685,
     "w": 0.36,
     "delay": 0.1
    }
@@ -1027,43 +1031,47 @@
    ]
   },
   {
+   "t0": 63.2,
+   "t1": 65.4,
+   "scrim": "bottom",
+   "lines": [
+    {
+     "text": "Soalan saya kepada Dr. Fakrul juga.",
+     "font": "Montserrat",
+     "weight": 600,
+     "size": 96,
+     "y": 0.69,
+     "color": "ivory",
+     "anim": "fade"
+    },
+    {
+     "text": "My question is also for Dr Fakrul.",
+     "font": "CormorantItalic",
+     "weight": 600,
+     "size": 98,
+     "y": 0.73,
+     "color": "champagne",
+     "anim": "fade"
+    }
+   ]
+  },
+  {
    "t0": 67.0,
    "t1": 74.9,
    "scrim": "closing",
    "rules": [
-    0.735
+    0.728
    ],
    "lines": [
     {
-     "text": "DR FAKRUL AZREN",
+     "text": "FORUM INTELEKTUAL DIRAJA 2026",
      "font": "Cinzel",
-     "weight": 700,
-     "size": 150,
+     "weight": 600,
+     "size": 120,
      "y": 0.7,
      "color": "gold",
-     "track": 0.14,
+     "track": 0.08,
      "anim": "track"
-    },
-    {
-     "text": "FORUM INTELEKTUAL DIRAJA 2026",
-     "font": "Montserrat",
-     "weight": 600,
-     "size": 56,
-     "y": 0.756,
-     "color": "ivory",
-     "track": 0.3,
-     "anim": "fade",
-     "delay": 0.7
-    },
-    {
-     "text": "Alhamdulillah. A moment to remember.",
-     "font": "CormorantItalic",
-     "weight": 500,
-     "size": 96,
-     "y": 0.8,
-     "color": "champagne",
-     "anim": "rise",
-     "delay": 1.6
     }
    ]
   }
@@ -1123,6 +1131,15 @@
    "src": "098.mp4",
    "start": 62.98,
    "end": 70.42,
+   "max_gap": 0.2,
+   "gap": 0.13,
+   "atten": null
+  },
+  {
+   "name": "q2",
+   "src": "N146.mp4",
+   "start": 81.3,
+   "end": 83.42,
    "max_gap": 0.2,
    "gap": 0.13,
    "atten": null
