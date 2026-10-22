@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<title>KPT Reel Thumbnail</title>
+<!--
+  Cover / thumbnail for the KPT mental-health reel, 1080x1920. All headline content sits inside
+  the central 1080x1350 band (y 285-1635) so the Instagram 4:5 grid crop keeps it intact.
+  Rendered with tools/render_overlay.mjs (one frame).
+-->
+<style>
+@font-face{font-family:'Anton';src:url(FONTS/Anton-400.woff2) format('woff2');}
+@font-face{font-family:'Bebas Neue';src:url(FONTS/BebasNeue-400.woff2) format('woff2');}
+@font-face{font-family:'Caveat';font-weight:700;src:url(FONTS/Caveat-700.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:600 900;src:url(FONTS/Montserrat-800.woff2) format('woff2');}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:600;src:url(FONTS/PlayfairDisplay-600i.woff2) format('woff2');}
+:root{--navy:#0B1F4D;--gold:#E9B949;--gold2:#F7D98B;--cream:#F7F1E3;--coral:#FF6B5B;--sky:#7CC8FF;--pink:#FF9EC4;}
+html,body{margin:0;background:#0B1F4D;}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0B1F4D;}
+.abs{position:absolute;}
+.anton{font-family:'Anton',sans-serif;line-height:1;white-space:nowrap;}
+.mont{font-family:'Montserrat',sans-serif;font-weight:800;white-space:nowrap;}
+.sticker{filter:drop-shadow(0 12px 16px rgba(5,12,35,.5));}
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- packed hall, darkened and tinted navy -->
+  <img class="abs" id="bg" style="left:-60px;top:0;width:1200px;height:2133px;object-fit:cover;filter:blur(3px) brightness(.6) saturate(1.1)">
+  <div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(11,31,77,.92) 0%,rgba(11,31,77,.55) 30%,rgba(11,31,77,.35) 55%,rgba(11,31,77,.92) 82%,#0B1F4D 100%)"></div>
+  <div class="abs" style="inset:0;background-image:radial-gradient(rgba(233,185,73,.22) 2.5px,transparent 3px);background-size:24px 24px;opacity:.5"></div>
+  <!-- gold rays behind the speaker -->
+  <svg class="abs" width="1080" height="1920" style="left:0;top:0" id="rays"></svg>
+
+  <!-- event tag -->
+  <div class="abs mont" style="left:0;top:300px;width:1080px;text-align:center">
+    <span style="display:inline-block;background:var(--gold);color:var(--navy);font-size:34px;letter-spacing:3px;padding:12px 30px 10px;border-radius:40px">HARI TERBUKA PSIKOLOGI KPT 2026</span>
+  </div>
+
+  <!-- headline -->
+  <div class="abs anton" style="left:0;top:395px;width:1080px;text-align:center;font-size:162px;color:#fff;letter-spacing:3px;text-shadow:10px 10px 0 #0B1F4D,0 0 40px rgba(0,0,0,.35)">MENTAL HEALTH</div>
+  <div class="abs sticker" style="left:340px;top:585px;width:400px;height:140px;transform:rotate(-4deg)">
+    <div class="abs anton" id="kpt" style="width:400px;height:140px;background:var(--gold);color:var(--navy);font-size:116px;text-align:center;line-height:146px">@ KPT!</div>
+  </div>
+
+  <!-- speaker cut-out (the energetic stage moment), with sticker outline -->
+  <img class="abs" id="cut" style="left:120px;top:370px;width:1080px;height:1920px;transform:scale(1.0);transform-origin:430px 1000px;
+       filter:drop-shadow(9px 0 0 #fff) drop-shadow(-9px 0 0 #fff) drop-shadow(0 9px 0 #fff) drop-shadow(0 -9px 0 #fff) drop-shadow(0 24px 34px rgba(0,0,0,.55));
+       -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 1090px,transparent 1170px);mask-image:linear-gradient(to bottom,#000 0,#000 1090px,transparent 1170px)">
+
+  <!-- icon stickers -->
+  <div class="abs sticker" id="i1" style="left:90px;top:860px"></div>
+  <div class="abs sticker" id="i2" style="left:860px;top:820px"></div>
+  <div class="abs sticker" id="i3" style="left:110px;top:1130px"></div>
+
+  <!-- talk title on torn paper -->
+  <div class="abs sticker" style="left:40px;top:1330px;width:1000px;height:150px;transform:rotate(-2deg)">
+    <div class="abs anton" id="paper" style="width:1000px;height:150px;background:var(--cream);color:var(--navy);font-size:94px;text-align:center;line-height:156px;letter-spacing:2px">MENGURUS OVERTHINKING</div>
+  </div>
+  <div class="abs mont" style="left:0;top:1508px;width:1080px;text-align:center;font-size:40px;color:#fff;letter-spacing:1px;text-shadow:0 3px 12px rgba(0,0,0,.6)">
+    Ceramah &amp; Saringan Kesihatan Mental
+  </div>
+  <div class="abs" style="left:0;top:1568px;width:1080px;text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:52px;color:var(--gold2);text-shadow:0 3px 14px rgba(0,0,0,.6)">
+    Dr Fakrul Azren &nbsp;·&nbsp; 15 Oktober 2026
+  </div>
+</div>
+<script>
+const A = window.ASSETS || 'assets/';
+document.getElementById('bg').src = A + 'thumb_bg.jpg';
+document.getElementById('cut').src = A + 'freeze1_cut.png';
+function torn(w, h, amp, seed) {
+  let s = seed; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; const p = [];
+  for (let i = 0; i <= 14; i++) p.push([i / 14 * w, r() * amp]);
+  for (let i = 0; i <= 6; i++) p.push([w - r() * amp * .6, i / 6 * h]);
+  for (let i = 14; i >= 0; i--) p.push([i / 14 * w, h - r() * amp]);
+  for (let i = 6; i >= 0; i--) p.push([r() * amp * .6, i / 6 * h]);
+  return 'polygon(' + p.map(q => `${(q[0] / w * 100).toFixed(2)}% ${(q[1] / h * 100).toFixed(2)}%`).join(',') + ')';
+}
+document.getElementById('kpt').style.clipPath = torn(400, 140, 14, 9);
+document.getElementById('paper').style.clipPath = torn(1000, 150, 12, 31);
+document.getElementById('rays').innerHTML = Array.from({ length: 16 }, (_, i) => {
+  const a = i / 16 * Math.PI * 2, c = [600, 1050];
+  return `<path d="M${c[0]} ${c[1]} L${c[0] + Math.cos(a) * 1600} ${c[1] + Math.sin(a) * 1600} L${c[0] + Math.cos(a + .09) * 1600} ${c[1] + Math.sin(a + .09) * 1600}Z" fill="#E9B949" opacity=".14"/>`;
+}).join('');
+const ICONS = {
+  heart: `<path d="M50 88 C18 62 4 46 4 28 C4 13 16 4 29 4 C39 4 46 10 50 18 C54 10 61 4 71 4 C84 4 96 13 96 28 C96 46 82 62 50 88Z" fill="#FF6B5B"/>`,
+  brain: `<path d="M50 14 C42 4 24 6 20 18 C8 20 4 34 10 42 C2 50 6 66 18 68 C20 82 36 88 46 80 L50 78 L54 80 C64 88 80 82 82 68 C94 66 98 50 90 42 C96 34 92 20 80 18 C76 6 58 4 50 14Z" fill="#FF9EC4"/>
+          <path d="M50 16 V78 M30 30 Q40 36 34 46 M70 30 Q60 36 66 46 M26 56 Q36 54 40 62 M74 56 Q64 54 60 62" fill="none" stroke="#0B1F4D" stroke-width="4" stroke-linecap="round"/>`,
+  bubble: `<path d="M10 8 H90 Q98 8 98 16 V60 Q98 68 90 68 H44 L24 90 L28 68 H10 Q2 68 2 60 V16 Q2 8 10 8Z" fill="#7CC8FF"/>
+           <circle cx="30" cy="38" r="7" fill="#0B1F4D"/><circle cx="50" cy="38" r="7" fill="#0B1F4D"/><circle cx="70" cy="38" r="7" fill="#0B1F4D"/>`,
+};
+function icon(name, size, rot) {
+  const art = ICONS[name];
+  const outline = art.replace(/fill="[^"]*"/g, 'fill="#fff"').replace(/stroke="#0B1F4D"/g, 'stroke="#fff"');
+  return `<svg width="${size}" height="${size}" viewBox="-6 -6 112 112" style="overflow:visible;transform:rotate(${rot}deg)">
+    <g stroke="#fff" stroke-width="14" stroke-linejoin="round" stroke-linecap="round">${outline}</g>
+    <g stroke="#0B1F4D" stroke-width="3.5" stroke-linejoin="round">${art}</g></svg>`;
+}
+document.getElementById('i1').innerHTML = icon('brain', 150, -10);
+document.getElementById('i2').innerHTML = icon('bubble', 140, 8);
+document.getElementById('i3').innerHTML = icon('heart', 110, -8);
+window.seek = () => {};
+window.ready = (async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  return true;
+})();
+</script>
+</body>
+</html>
