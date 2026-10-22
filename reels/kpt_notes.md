@@ -1,12 +1,15 @@
 # Mental Health @ KPT — 30 s highlight reel (15 Oktober 2026)
 
-Output: `out/KPT_MentalHealth_Reel_30s_v2.mp4`, 1080×1920, 30 fps, 30.0 s (900 frames), H.264 + AAC 48 kHz,
-−14.0 LUFS integrated, −1.9 dBFS peak. Source footage is native 1080×1920, so it is delivered at 1080p (no 4K upscale).
+Output: `out/KPT_MentalHealth_Reel_30s_v3.mp4`, 1080×1920, 30 fps, 30.0 s (900 frames), H.264 + AAC 48 kHz,
+−14.6 LUFS integrated, −1.8 dBFS peak. Source footage is native 1080×1920, so it is delivered at 1080p (no 4K upscale).
 
 Source: Google Photos shared album (24 vertical videos + 2 photos). The parking-sign photo was left out
 because it shows a car registration plate. v2 (client feedback): energetic freeze-frame sticker at 16 s,
 closing selfie replaced by footage, music made continuous (no stop-down, lighter quote duck, smoother
 pump), Dewan Za'ba entrance added.
+v3: fixed the audio in the delivered MP4 (packets were dropped, so music stopped after ~5 s; see
+`tools/compose_kpt.sh`), replaced the side-profile clapping clip in the split screen with the front-row
+audience, cleaned the sticker's faded outline.
 
 ## Timeline (120 BPM, cuts on the beat)
 
@@ -25,7 +28,7 @@ pump), Dewan Za'ba entrance added.
 | 15.5–17.0 | 20 @ 0.0 stage talk, hands gesturing, freeze at 16.0 | half-body freeze-frame cut-out (Higgsfield background removal) |
 | 17.0–18.0 | 13 @ 13.2 mic handed to a smiling audience member | cream paper-rip, film-strip sprockets, doodles |
 | 18.0–19.0 | 13 @ 24.4 hands raised (whip) | |
-| 19.0–20.5 | split: 08 @ 6.3 clapping / 15 @ 6.5 smiling audience | **SMALL CONVERSATIONS.** on the divider |
+| 19.0–20.5 | split: 11 @ 13.8 front-row audience laughing / 15 @ 6.5 smiling audience | **SMALL CONVERSATIONS.** on the divider |
 | 20.5–21.5 | 24 @ 0.4 talk, freeze at 21.0 | freeze-frame cut-out, **BIG IMPACT.** slam + shake |
 | 21.5–22.5 | 16 @ 3.4 Q&A with a participant (whip) | |
 | 22.5–24.0 | 15 @ 0.2 booth team member with mic | polaroid collage (04 @ 8.5, 11 @ 0.3, 26 @ 0.8) |
@@ -52,7 +55,7 @@ python3 tools/mix_kpt_audio.py work/kpt_music.wav work/src/20_2026-10-15_161040.
 sed "s#FONTS/#../fonts/#g" tools/overlay/kpt.html > work/overlay/index.html   # assets in work/overlay/assets
 python3 -m http.server 8765 --bind 127.0.0.1 &   # from work/
 node tools/render_overlay.mjs http://127.0.0.1:8765/overlay/index.html work/ovframes 30 30 4
-tools/compose_kpt.sh work/footage.mp4 work/ovframes work/kpt_mix.wav out/KPT_MentalHealth_Reel_30s_v2.mp4
+tools/compose_kpt.sh work/footage.mp4 work/ovframes work/kpt_mix.wav out/KPT_MentalHealth_Reel_30s_v3.mp4
 ```
 
 Fonts (Google Fonts, latin subset): Anton, Bebas Neue, Montserrat, Playfair Display, Caveat → `work/fonts/`.

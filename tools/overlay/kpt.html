@@ -509,6 +509,8 @@ iris(9.0, '#0B1F4D');
   }).join(''), 'transform-origin:540px 760px', fz);
   const cut = el('img', 'abs full', `transform-origin:430px 1000px;filter:drop-shadow(8px 0 0 #fff) drop-shadow(-8px 0 0 #fff) drop-shadow(0 8px 0 #fff) drop-shadow(0 -8px 0 #fff) drop-shadow(0 20px 30px rgba(0,0,0,.5))`, fz);
   cut.src = A + 'freeze1_cut.png';
+  // fade the sticker (and its white outline) out below the waist
+  cut.style.webkitMaskImage = cut.style.maskImage = 'linear-gradient(to bottom, #000 0, #000 1090px, transparent 1170px)';
   const lce = el('div', 'abs', 'left:70px;top:1320px;width:900px;height:420px');
   const items = ['Learn', 'Connect', 'Empower'].map((w, i) =>
     el('div', 'abs mont', `left:0;top:${i * 128}px;font-size:96px;font-weight:900;color:#fff;letter-spacing:1px;

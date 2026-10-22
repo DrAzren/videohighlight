@@ -111,6 +111,12 @@ clips = []
 for i, s in enumerate(cfg["segments"]):
     n = frames(s)
     o = seg_dir / f"s{i:02d}.mp4"
+    spec = seg_dir / f"s{i:02d}.json"
+    key = json.dumps(s, sort_keys=True)
+    if o.exists() and spec.exists() and spec.read_text() == key:   # unchanged: reuse
+        clips.append(o)
+        print(f"segment {i + 1}/{len(cfg['segments'])}: cached")
+        continue
     if s.get("blank"):
         args, chain = ["-f", "lavfi", "-i", f"color=c=0x0b1736:s={W}x{H}:r={FPS}"], "[0:v]null[v]"
     elif s.get("split"):
@@ -125,6 +131,7 @@ for i, s in enumerate(cfg["segments"]):
                              capture_output=True, text=True).stdout.strip())
     if got != n:
         sys.exit(f"segment {i}: expected {n} frames, got {got}")
+    spec.write_text(key)
     clips.append(o)
     print(f"segment {i + 1}/{len(cfg['segments'])}: {s['t0']:.2f}-{s['t1']:.2f}s ({n} frames)")
 
