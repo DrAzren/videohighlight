@@ -4,8 +4,8 @@
 follows the edit:
   0.0-3.0   hook      : impact, full beat, lead hook
   3.0-9.0   booth     : bouncy groove, plucks, offbeat bass
-  9.0-17.0  talk      : lighter (hats + pluck + pad), quote dip at 12.6-14.0,
-                        snare build from 15.0, stop-down 16.5-17.0
+  9.0-17.0  talk      : lighter groove (softer kick, 8th plucks), gentle quote dip at
+                        12.6-14.0, snare build 15.0-17.0 straight into the drop
   17.0-24.0 montage   : full chorus, lead an octave up, impact on 21.0 (BIG IMPACT)
   24.0-30.0 ending    : half-time drums, bells, final tonic chord at 28.0 ringing out
 
@@ -158,7 +158,7 @@ def pad(notes, dur, cutoff=2600):
     for m in notes:
         s += saw(hz(m), n, (-0.12, -0.04, 0.04, 0.12))
     s = filt(s / len(notes), "low", cutoff)
-    return s * adsr(n, 0.08, 0.2, 0.85, 0.25)
+    return s * adsr(n, 0.05, 0.2, 0.85, 0.5)
 
 
 def bass(m, dur):
@@ -201,7 +201,7 @@ def impact(g=1.0):
 # ---- sidechain pump (applied to chords/bass) --------------------------------
 tt = np.arange(N) / SR
 phase = (tt % BEAT) / BEAT
-pump = 1 - 0.55 * (1 - np.clip(phase / 0.45, 0, 1)) ** 2
+pump = 1 - 0.3 * (1 - np.clip(phase / 0.5, 0, 1)) ** 2
 
 # ---- arrangement -------------------------------------------------------------
 music_L, music_R = np.zeros(N), np.zeros(N)
@@ -210,8 +210,6 @@ for b in beats:
     s = sec(b)
     bi = int(round(b / BEAT))
     on_bar = bi % 4 == 0
-    if 16.5 <= b < 17.0:                      # stop-down before the montage drop
-        continue
     if s == "ending":
         if b >= 28.0:
             continue
@@ -222,9 +220,8 @@ for b in beats:
             add(clap() * 0.5, b)
         add(hat(), b + BEAT / 2, 0.8, 0.3)
         continue
-    # kick: four-on-the-floor except the airy start of the talk section
-    if not (s == "talk" and 9.0 <= b < 12.0 and bi % 2 == 1):
-        add(kick(0.95 if s != "talk" else 0.75), b)
+    # kick: four-on-the-floor throughout, softer in the talk section
+    add(kick(0.95 if s != "talk" else 0.75), b)
     if bi % 2 == 1 and s != "talk":
         add(clap(), b, 0.9, -0.05)
     if s == "talk" and bi % 2 == 1:
@@ -236,24 +233,20 @@ for b in beats:
             add(hat(), b + k * BEAT / 4, 0.7, -0.3)
 
 # snare build into the drop
-for k in range(16):
-    t = 15.0 + k * (1.5 / 16)
-    add(snare(), t, 0.25 + 0.45 * k / 15, 0.1)
+for k in range(24):
+    t = 15.0 + 2.0 * (1 - (1 - k / 24) ** 1.35)   # accelerating roll, lands on 17.0
+    add(snare(), t, 0.2 + 0.45 * k / 23, 0.1)
 
 # bass: offbeat eighths (pumping), root of the bar
 for b in np.arange(0, 28.0, BEAT / 2):
     s = sec(b)
-    if 16.5 <= b < 17.0 or (12.6 <= b < 14.0):
-        continue
-    if s == "talk" and b < 12.0:
-        continue
     root = ROOTS[chord_at(b)]
     if s == "ending":
         if (b / BEAT) % 2 == 0:
-            add(bass(root, BEAT * 1.8), b, 0.5)
+            add(bass(root, BEAT * 2.05), b, 0.5)
         continue
     if round(b / (BEAT / 2)) % 2 == 1:        # offbeat eighths only
-        add(bass(root, BEAT / 2 * 0.9), b, 0.6)
+        add(bass(root, BEAT * 0.98), b, 0.55)
 
 # chords: pumping pad, one per bar
 for bar in range(15):
@@ -261,8 +254,8 @@ for bar in range(15):
     notes = TRIADS[bar % 4]
     if t0 >= 28.0:
         break
-    p = pad([n - 12 for n in notes] + notes, BAR + 0.1, 2200 if sec(t0) != "ending" else 1600)
-    g = {"hook": 0.32, "booth": 0.24, "talk": 0.26, "montage": 0.34, "ending": 0.36}[sec(t0)]
+    p = pad([n - 12 for n in notes] + notes, BAR + 0.45, 2200 if sec(t0) != "ending" else 1600)
+    g = {"hook": 0.36, "booth": 0.3, "talk": 0.32, "montage": 0.38, "ending": 0.4}[sec(t0)]
     i = int(t0 * SR)
     j = min(N, i + len(p))
     add(p[: j - i] * (pump[i:j] if sec(t0) != "ending" else 1.0), t0, g, 0.0)
@@ -277,8 +270,6 @@ for k, m in enumerate([69, 73, 76, 81]):
 # pluck arpeggio: 16ths in booth/montage, 8ths in talk, bells in the ending
 for b in np.arange(0, 28.0, BEAT / 4):
     s = sec(b)
-    if 16.5 <= b < 17.0:
-        continue
     k = int(round(b / (BEAT / 4)))
     tri = TRIADS[chord_at(b)]
     pattern = [tri[0], tri[1], tri[2], tri[1] + 12 if tri[1] + 12 < 88 else tri[1]]
@@ -293,7 +284,7 @@ for b in np.arange(0, 28.0, BEAT / 4):
 # lead hook: hook section and the montage chorus (octave up)
 for b in np.arange(0, 24.0, BEAT / 2):
     s = sec(b)
-    if s not in ("hook", "montage") or (16.5 <= b < 17.0):
+    if s not in ("hook", "montage"):
         continue
     bar = int(b // BAR) % 4
     step = int(round((b % BAR) / (BEAT / 2)))
@@ -316,8 +307,8 @@ for t_end, dur, g in ((3.0, 1.0, 0.35), (9.0, 1.5, 0.4), (17.0, 2.0, 0.6), (24.0
 
 # ---- quote dip: lowpass the whole bed while Dr Azren speaks -------------------
 mix = np.stack([L, R])
-lp = np.stack([filt(L, "low", 900), filt(R, "low", 900)])
-w = np.clip(np.minimum((tt - 12.45) / 0.2, (14.05 - tt) / 0.25), 0, 1)
+lp = np.stack([filt(L, "low", 2200), filt(R, "low", 2200)])
+w = 0.6 * np.clip(np.minimum((tt - 12.45) / 0.3, (14.05 - tt) / 0.35), 0, 1)
 mix = mix * (1 - w) + lp * w
 
 # ---- reverb + master ---------------------------------------------------------

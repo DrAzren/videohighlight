@@ -127,12 +127,12 @@ CUES = [
     (8.7, whoosh(0.3, False, 0.6)),
     (8.82, whoosh(0.2, True, 0.7)),
     *[(9.16 + i * 0.04, click(0.4)) for i in range(9)], (9.62, pop(760, 0.9)), (9.85, paper(0.3, 0.9)),
-    (10.38, whoosh(0.26, True, 0.85)),
+    (10.0, thud(0.4)), (10.88, whoosh(0.26, True, 0.85)),
     (12.05, whoosh(0.35, False, 0.35)),
     (13.86, whoosh(0.28, True, 0.6)),
     (14.12, pop(900, 0.5)), (14.27, pop(1000, 0.5)), (14.42, pop(1100, 0.5)),
     (14.5, thud(0.45)), (15.0, thud(0.45)), (15.5, thud(0.5)),
-    (16.48, shutter(1.0)), (16.52, whoosh(0.4, True, 0.5)),
+    (15.98, shutter(1.0)), (16.02, whoosh(0.4, True, 0.5)),
     (16.83, paper(0.17, 0.8)), (17.0, rip(0.42, 1.0)),
     (17.12, pop(980, 0.6)), (17.22, pop(1180, 0.5)),
     (17.88, whoosh(0.26, True, 0.85)), (18.05, pop(880, 0.5)), (18.15, pop(1050, 0.5)),
@@ -146,7 +146,7 @@ CUES = [
     (23.05, shutter(0.8)), (23.1, paper(0.25, 0.8)),
     (23.8, whoosh(0.35, True, 0.6)),
     (24.4, shimmer(1.2, 0.7)),
-    (26.45, whoosh(0.6, False, 0.45)),
+    (26.75, whoosh(0.5, False, 0.45)),
     (27.25, shimmer(1.4, 0.8)), (28.4, shimmer(1.0, 0.6)),
 ]
 
@@ -165,7 +165,7 @@ m = m[:, :N]
 if m.shape[1] < N:
     m = np.pad(m, ((0, 0), (0, N - m.shape[1])))
 tt = np.arange(N) / SR
-duck = 1 - 0.62 * np.clip(np.minimum((tt - 12.5) / 0.15, (14.0 - tt) / 0.2), 0, 1)
+duck = 1 - 0.5 * np.clip(np.minimum((tt - 12.5) / 0.25, (14.0 - tt) / 0.3), 0, 1)
 m *= duck
 
 # ---- speech excerpt: high-pass, de-noise, gentle compression ------------------
@@ -183,7 +183,7 @@ v[-fo:] *= np.linspace(1, 0, fo)
 voice = np.zeros(N)
 i = int(SPEECH_AT * SR)
 voice[i:i + len(v)] = v[: N - i]
-voice_st = np.stack([voice, voice]) * 1.25
+voice_st = np.stack([voice, voice]) * 1.8
 
 mix = m * 0.9 + sfx_st + voice_st
 peak = np.max(np.abs(mix))
