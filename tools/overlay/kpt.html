@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<title>KPT Reel Overlay</title>
+<!--
+  Motion-graphics layer for the KPT mental-health reel (1080x1920, 30 fps, 30 s).
+  HyperFrames-style composition: every element is a pure function of time, driven by
+  window.seek(t), so each frame renders deterministically and can be captured with a
+  transparent background and composited over the footage.
+  Assets are resolved relative to window.ASSETS (default "assets/").
+-->
+<style>
+@font-face{font-family:'Anton';src:url(FONTS/Anton-400.woff2) format('woff2');}
+@font-face{font-family:'Bebas Neue';src:url(FONTS/BebasNeue-400.woff2) format('woff2');}
+@font-face{font-family:'Caveat';font-weight:700;src:url(FONTS/Caveat-700.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:600 900;src:url(FONTS/Montserrat-800.woff2) format('woff2');}
+@font-face{font-family:'Playfair Display';font-weight:700;src:url(FONTS/PlayfairDisplay-700.woff2) format('woff2');}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:600;src:url(FONTS/PlayfairDisplay-600i.woff2) format('woff2');}
+:root{
+  --navy:#0B1F4D; --navy2:#16357A; --gold:#E9B949; --gold2:#F7D98B;
+  --cream:#F7F1E3; --coral:#FF6B5B; --teal:#2EC4B6; --sky:#7CC8FF; --pink:#FF9EC4;
+}
+html,body{margin:0;padding:0;background:transparent;}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;}
+.abs{position:absolute;left:0;top:0;transform-origin:50% 50%;}
+.anton{font-family:'Anton',sans-serif;line-height:1;}
+.bebas{font-family:'Bebas Neue',sans-serif;line-height:1;}
+.mont{font-family:'Montserrat',sans-serif;font-weight:800;line-height:1.05;}
+.play{font-family:'Playfair Display',serif;line-height:1.05;}
+.cav{font-family:'Caveat',cursive;font-weight:700;line-height:1;}
+.ltr{display:inline-block;white-space:pre;}
+.anton,.bebas,.mont,.play,.cav{white-space:nowrap;}
+.sticker{filter:drop-shadow(0 10px 14px rgba(5,12,35,.45));}
+.full{width:1080px;height:1920px;}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+const W = 1080, H = 1920;
+const A = (window.ASSETS || 'assets/');
+const stage = document.getElementById('stage');
+
+// ---------- helpers --------------------------------------------------------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const oc = x => 1 - Math.pow(1 - x, 3);
+const oq = x => 1 - Math.pow(1 - x, 5);
+const ic = x => x * x * x;
+const ioc = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const ob = (x, s = 1.9) => { const c = s + 1; return 1 + c * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2); };
+const oe = x => x <= 0 ? 0 : x >= 1 ? 1 : Math.pow(2, -10 * x) * Math.sin((x * 10 - .75) * 2 * Math.PI / 3) + 1;
+// opacity window: fade in over fi from a, fade out over fo ending at b
+const win = (t, a, b, fi = .15, fo = .15) => Math.min(prog(t, a, a + fi), 1 - prog(t, b - fo, b));
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
+
+function el(tag, cls, css, parent, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (css) e.style.cssText = css;
+  if (html !== undefined) e.innerHTML = html;
+  (parent || stage).appendChild(e);
+  return e;
+}
+function svg(w, h, inner, css, parent) {
+  return el('div', 'abs', `width:${w}px;height:${h}px;${css || ''}`, parent,
+    `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">${inner}</svg>`);
+}
+function letters(parent, text, css) {
+  return [...text].map(ch => el('span', 'ltr', css || '', parent, ch === ' ' ? '&nbsp;' : ch));
+}
+function show(e, on) { e.style.display = on ? '' : 'none'; return on; }
+function tf(e, x, y, s = 1, r = 0, extra = '') {
+  e.style.transform = `translate(${x}px,${y}px) rotate(${r}deg) scale(${s})${extra}`;
+}
+
+// torn edge: jagged polyline points across [x0,x1] around y(x)
+function tornPts(x0, x1, yf, amp, seed, step = 18) {
+  const r = rng(seed), pts = [];
+  for (let x = x0; x <= x1 + step; x += step) pts.push([Math.min(x, x1), yf(Math.min(x, x1)) + (r() - .5) * 2 * amp]);
+  return pts;
+}
+const P = pts => pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+
+// paper texture (deterministic noise) as data URL
+function paperTex(base, seed, alpha = .07) {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'); g.fillStyle = base; g.fillRect(0, 0, 256, 256);
+  const r = rng(seed), d = g.getImageData(0, 0, 256, 256);
+  for (let i = 0; i < d.data.length; i += 4) {
+    const n = (r() - .5) * 255 * alpha * 2;
+    d.data[i] += n; d.data[i + 1] += n; d.data[i + 2] += n;
+  }
+  g.putImageData(d, 0, 0);
+  for (let k = 0; k < 40; k++) { // fibres
+    g.strokeStyle = `rgba(255,255,255,${.04 + r() * .05})`; g.lineWidth = 1;
+    g.beginPath(); const x = r() * 256, y = r() * 256; g.moveTo(x, y);
+    g.quadraticCurveTo(x + r() * 30 - 15, y + r() * 30 - 15, x + r() * 50 - 25, y + r() * 50 - 25); g.stroke();
+  }
+  return c.toDataURL();
+}
+
+// torn-paper label (div with clip-path polygon)
+function tornClip(w, h, amp, seed) {
+  const r = rng(seed), pts = [];
+  const n = 14;
+  for (let i = 0; i <= n; i++) pts.push([i / n * w, (r()) * amp]);
+  for (let i = 0; i <= 6; i++) pts.push([w - r() * amp * .6, i / 6 * h]);
+  for (let i = n; i >= 0; i--) pts.push([i / n * w, h - r() * amp]);
+  for (let i = 6; i >= 0; i--) pts.push([r() * amp * .6, i / 6 * h]);
+  return 'polygon(' + pts.map(p => `${(p[0] / w * 100).toFixed(2)}% ${(p[1] / h * 100).toFixed(2)}%`).join(',') + ')';
+}
+
+// ---------- icon library (sticker style: white outline under navy-stroked art) -------
+const ICONS = {
+  heart: `<path d="M50 88 C18 62 4 46 4 28 C4 13 16 4 29 4 C39 4 46 10 50 18 C54 10 61 4 71 4 C84 4 96 13 96 28 C96 46 82 62 50 88Z" fill="#FF6B5B"/>`,
+  bubble: `<path d="M10 8 H90 Q98 8 98 16 V60 Q98 68 90 68 H44 L24 90 L28 68 H10 Q2 68 2 60 V16 Q2 8 10 8Z" fill="#7CC8FF"/>
+           <circle cx="30" cy="38" r="7" fill="#0B1F4D"/><circle cx="50" cy="38" r="7" fill="#0B1F4D"/><circle cx="70" cy="38" r="7" fill="#0B1F4D"/>`,
+  brain: `<path d="M50 14 C42 4 24 6 20 18 C8 20 4 34 10 42 C2 50 6 66 18 68 C20 82 36 88 46 80 L50 78 L54 80 C64 88 80 82 82 68 C94 66 98 50 90 42 C96 34 92 20 80 18 C76 6 58 4 50 14Z" fill="#FF9EC4"/>
+          <path d="M50 16 V78 M30 30 Q40 36 34 46 M70 30 Q60 36 66 46 M26 56 Q36 54 40 62 M74 56 Q64 54 60 62" fill="none" stroke="#0B1F4D" stroke-width="4" stroke-linecap="round"/>`,
+  smile: `<circle cx="50" cy="50" r="44" fill="#E9B949"/><circle cx="35" cy="40" r="6" fill="#0B1F4D"/><circle cx="65" cy="40" r="6" fill="#0B1F4D"/>
+          <path d="M28 58 Q50 80 72 58" fill="none" stroke="#0B1F4D" stroke-width="6" stroke-linecap="round"/>`,
+  sprout: `<path d="M50 92 V50" stroke="#0B1F4D" stroke-width="6" fill="none"/><path d="M50 56 C30 58 14 44 14 22 C36 22 50 34 50 56Z" fill="#2EC4B6"/>
+           <path d="M50 46 C66 46 84 34 86 12 C64 12 50 26 50 46Z" fill="#7FE0C0"/>`,
+  star: `<path d="M50 4 L61 37 L96 38 L68 59 L78 94 L50 73 L22 94 L32 59 L4 38 L39 37Z" fill="#F7D98B"/>`,
+  hands: `<path d="M8 70 Q20 54 36 58 L56 64 Q62 66 60 72 Q58 77 52 76 L40 74 M8 70 L8 92 L60 92 Q72 92 82 82 L96 66 Q98 58 90 58 Q84 58 78 64 L66 74" fill="#F7F1E3"/>
+          <path d="M50 46 C36 36 30 30 30 22 C30 14 36 10 42 10 C46 10 49 13 50 16 C51 13 54 10 58 10 C64 10 70 14 70 22 C70 30 64 36 50 46Z" fill="#FF6B5B"/>`,
+};
+function icon(name, size) {
+  const art = ICONS[name];
+  const outline = art.replace(/fill="[^"]*"/g, 'fill="#fff"').replace(/stroke="#0B1F4D"/g, 'stroke="#fff"');
+  return `<svg width="${size}" height="${size}" viewBox="-6 -6 112 112" style="overflow:visible">
+    <g stroke="#fff" stroke-width="14" stroke-linejoin="round" stroke-linecap="round">${outline}</g>
+    <g stroke="#0B1F4D" stroke-width="3.5" stroke-linejoin="round">${art}</g></svg>`;
+}
+
+// hand-drawn doodles: stroked paths, revealed with stroke-dashoffset
+const DOODLES = {
+  star: 'M50 6 L60 38 L94 38 L66 58 L77 92 L50 71 L23 92 L34 58 L6 38 L40 38Z',
+  burst: 'M50 2 V22 M50 78 V98 M2 50 H22 M78 50 H98 M16 16 L30 30 M70 70 L84 84 M84 16 L70 30 M30 70 L16 84',
+  squiggle: 'M2 50 Q14 20 26 50 T50 50 T74 50 T98 50',
+  heart: 'M50 88 C18 62 4 46 4 28 C4 13 16 4 29 4 C39 4 46 10 50 18 C54 10 61 4 71 4 C84 4 96 13 96 28 C96 46 82 62 50 88Z',
+  arrow: 'M6 80 Q40 10 86 30 M70 14 L88 30 L68 44',
+  spark: 'M50 10 V36 M50 64 V90 M10 50 H36 M64 50 H90',
+  loop: 'M8 60 C20 10 60 10 50 50 C40 90 80 90 92 40',
+  bubble: 'M14 10 H86 Q94 10 94 18 V58 Q94 66 86 66 H46 L26 88 L30 66 H14 Q6 66 6 58 V18 Q6 10 14 10Z',
+};
+function doodle(name, size, color, css, sw = 6) {
+  const d = svg(size, size, `<g transform="scale(${size / 100})"><path d="${DOODLES[name]}" pathLength="1" fill="none"
+      stroke="${color}" stroke-width="${sw * 100 / size}" stroke-linecap="round" stroke-linejoin="round"
+      stroke-dasharray="1 1" stroke-dashoffset="1"/></g>`, css);
+  d.path = d.querySelector('path');
+  return d;
+}
+
+const C = []; // timeline updaters
+const on = f => C.push(f);
+
+// ============================================================================
+// 0. reusable transition FX
+// ============================================================================
+// whip streaks on whip cuts
+const streakLayer = el('div', 'abs full', 'pointer-events:none');
+const STREAK_T = [1.5, 5.0, 10.5, 14.0, 18.0, 21.5];
+const streaks = [];
+{
+  const r = rng(7);
+  for (let i = 0; i < 9; i++) {
+    const s = el('div', 'abs', `height:${4 + r() * 10}px;width:${300 + r() * 700}px;border-radius:8px;
+      background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.9),rgba(247,217,139,0));`, streakLayer);
+    streaks.push({ s, y: 150 + r() * 1600, d: r() * .05, sp: .8 + r() * .5 });
+  }
+}
+on(t => {
+  let k = -1;
+  for (const c of STREAK_T) if (t >= c - .12 && t <= c + .14) k = c;
+  if (!show(streakLayer, k >= 0)) return;
+  streaks.forEach((o, i) => {
+    const p = prog(t, k - .12 + o.d, k + .1 + o.d);
+    const dir = (i % 2 ? 1 : -1) * (k === 14.0 ? -1 : 1);
+    const x = dir > 0 ? lerp(-1100, 1300, ic(p) * o.sp) : lerp(1300, -1100, ic(p) * o.sp);
+    tf(o.s, x, o.y);
+    o.s.style.opacity = p > 0 && p < 1 ? .85 : 0;
+  });
+});
+
+// white flashes (camera shutter / impact)
+const flash = el('div', 'abs full', 'background:#fff;opacity:0');
+const FLASH = [[0.0, .9, .16], [7.0, .75, .1], [16.5, .8, .12], [21.0, .7, .14], [24.0, .55, .4], [22.55, .35, .08], [22.8, .35, .08], [23.05, .35, .08]];
+on(t => {
+  let o = 0;
+  for (const [c, a, d] of FLASH) if (t >= c && t < c + d) o = Math.max(o, a * (1 - (t - c) / d));
+  flash.style.opacity = o;
+  show(flash, o > 0.001);
+});
+
+// paper rip transition: paper covers the outgoing shot, then tears apart on the cut
+function rip(tc, base, seed, tape) {
+  const tex = paperTex(base, seed);
+  const r = rng(seed);
+  const yL = 820 + r() * 120, yR = 1000 + r() * 120;
+  const edge = tornPts(-40, W + 40, x => lerp(yL, yR, (x + 40) / (W + 80)), 22, seed + 1, 22);
+  const topPoly = [[-40, -60], [W + 40, -60], ...edge.slice().reverse()];
+  const botPoly = [...edge, [W + 40, H + 60], [-40, H + 60]];
+  const mk = (poly, withTape) => svg(W, H, `<defs><pattern id="pp${seed}${poly.length}" width="256" height="256" patternUnits="userSpaceOnUse">
+      <image href="${tex}" width="256" height="256"/></pattern></defs>
+      <polygon points="${P(poly)}" fill="url(#pp${seed}${poly.length})"/>
+      <polyline points="${P(edge)}" fill="none" stroke="#fff" stroke-width="12" stroke-linejoin="round" opacity=".92"/>
+      ${tape && withTape ? `<rect x="380" y="${(yL + yR) / 2 - 300}" width="320" height="80" fill="${tape}" opacity=".85" transform="rotate(-6 540 ${(yL + yR) / 2 - 260})"/>` : ''}`,
+    'filter:drop-shadow(0 0 18px rgba(0,0,0,.45))');
+  const top = mk(topPoly, true), bot = mk(botPoly, false);
+  on(t => {
+    const vis = t >= tc - .17 && t <= tc + .36;
+    show(top, vis); show(bot, vis);
+    if (!vis) return;
+    if (t < tc) {
+      const k = ic(prog(t, tc - .17, tc));
+      tf(top, 0, lerp(-1150, 0, k)); tf(bot, 0, lerp(1150, 0, k));
+    } else {
+      const q = prog(t, tc, tc + .34), k = q * q * (1.6 - .6 * q);
+      tf(top, lerp(0, -120, k), lerp(0, -1350, k), 1, lerp(0, -9, k));
+      tf(bot, lerp(0, 120, k), lerp(0, 1350, k), 1, lerp(0, 7, k));
+    }
+  });
+}
+
+// iris (circular) transition
+function iris(tc, color) {
+  const c = el('div', 'abs', `border-radius:50%;box-shadow:0 0 0 2600px ${color};border:16px solid var(--gold);box-sizing:border-box`);
+  on(t => {
+    if (!show(c, t >= tc - .18 && t <= tc + .26)) return;
+    const rr = t < tc ? lerp(1250, 0, ic(prog(t, tc - .18, tc))) : lerp(0, 1250, oc(prog(t, tc, tc + .26)));
+    c.style.width = c.style.height = (2 * rr) + 'px';
+    tf(c, 540 - rr, 980 - rr);
+    c.style.borderWidth = rr < 10 ? '0px' : '16px';
+  });
+}
+
+// ============================================================================
+// 1. HOOK 0-3  "MENTAL HEALTH @ KPT!" + "15 OKTOBER 2026"
+// ============================================================================
+{
+  // radial burst + paper confetti from the centre
+  const burst = el('div', 'abs full');
+  const r = rng(21);
+  const rays = [];
+  for (let i = 0; i < 18; i++) {
+    const a = i / 18 * 360 + r() * 8;
+    const ray = el('div', 'abs', `width:${360 + r() * 260}px;height:${10 + r() * 14}px;border-radius:10px;
+      background:${i % 3 ? 'var(--gold2)' : '#fff'};transform-origin:0 50%`, burst);
+    rays.push({ ray, a });
+  }
+  const conf = [];
+  const cols = ['#E9B949', '#FF6B5B', '#7CC8FF', '#2EC4B6', '#ffffff', '#FF9EC4'];
+  for (let i = 0; i < 46; i++) {
+    const kind = i % 3;
+    const s = 14 + r() * 26;
+    const e = el('div', 'abs', `width:${s}px;height:${kind === 2 ? s * .45 : s}px;background:${cols[i % cols.length]};
+      border-radius:${kind === 0 ? '50%' : '3px'};box-shadow:0 3px 6px rgba(0,0,0,.25)`, burst);
+    conf.push({ e, a: r() * Math.PI * 2, v: 700 + r() * 1100, rot: r() * 720 - 360, d: r() * .08 });
+  }
+  const cx = 540, cy = 1130;
+  on(t => {
+    if (!show(burst, t < 1.6)) return;
+    rays.forEach(({ ray, a }, i) => {
+      const p = prog(t, .02, .5);
+      const len = oc(p);
+      ray.style.opacity = (1 - p) * .95;
+      ray.style.transform = `translate(${cx}px,${cy}px) rotate(${a}deg) translateX(${80 + len * 520}px) scaleX(${.2 + (1 - p) * .9})`;
+    });
+    conf.forEach(o => {
+      const tt = Math.max(0, t - .03 - o.d);
+      const dist = o.v * (1 - Math.exp(-tt * 3.2)) / 3.2 * 3;
+      const x = cx + Math.cos(o.a) * dist, y = cy + Math.sin(o.a) * dist + 600 * tt * tt;
+      o.e.style.opacity = tt > 0 ? clamp(1.5 - tt) : 0;
+      o.e.style.transform = `translate(${x}px,${y}px) rotate(${o.rot * tt}deg)`;
+    });
+  });
+
+  // gold paper-cut blob behind the title
+  const blobPts = [];
+  { const rr = rng(5); for (let i = 0; i < 26; i++) { const a = i / 26 * Math.PI * 2, rad = 1 + (rr() - .5) * .18; blobPts.push([500 + Math.cos(a) * 470 * rad, 330 + Math.sin(a) * 300 * rad]); } }
+  const blob = svg(1000, 660, `<polygon points="${P(blobPts)}" fill="#0B1F4D" opacity=".82"/>
+     <polygon points="${P(blobPts)}" fill="none" stroke="#E9B949" stroke-width="8" stroke-dasharray="26 16"/>`,
+    'left:40px;top:830px;transform-origin:500px 330px');
+
+  const grp = el('div', 'abs', 'width:1080px;height:1920px;transform-origin:540px 1150px');
+  const l1 = el('div', 'abs anton', 'left:0;width:1080px;top:880px;text-align:center;font-size:250px;color:#fff;letter-spacing:4px', grp);
+  const l2 = el('div', 'abs anton', 'left:0;width:1080px;top:1105px;text-align:center;font-size:250px;color:#fff;letter-spacing:4px', grp);
+  const sh = 'text-shadow:10px 10px 0 #0B1F4D, 0 0 30px rgba(0,0,0,.25)';
+  const L1 = letters(l1, 'MENTAL', sh), L2 = letters(l2, 'HEALTH', sh);
+  const r2 = rng(33);
+  const rot1 = L1.map(() => (r2() - .5) * 40), rot2 = L2.map(() => (r2() - .5) * 40);
+
+  const label = el('div', 'abs sticker', 'left:290px;top:1380px;width:500px;height:170px;transform-origin:250px 85px', grp);
+  const labIn = el('div', 'abs anton', `width:500px;height:170px;background:var(--gold);color:var(--navy);font-size:140px;
+     text-align:center;line-height:170px;clip-path:${tornClip(500, 170, 16, 9)}`, label, '@ KPT!');
+
+  const date = el('div', 'abs sticker', 'left:150px;top:1585px;width:780px;height:130px', grp);
+  const dateIn = el('div', 'abs bebas', `width:780px;height:130px;background:var(--cream);color:var(--navy);font-size:104px;letter-spacing:6px;
+     text-align:center;line-height:140px;clip-path:${tornClip(780, 130, 12, 4)}`, date);
+  const DL = letters(dateIn, '15 OKTOBER 2026');
+
+  on(t => {
+    const vis = t < 3.0;
+    show(grp, vis); show(blob, vis);
+    if (!vis) return;
+    // blob
+    const bp = ob(prog(t, .0, .35), 1.4);
+    blob.style.opacity = 1 - prog(t, 2.7, 2.95);
+    tf(blob, 0, 0, lerp(.2, 1, bp) * (1 + .02 * Math.sin(t * 6)), lerp(-25, -3, bp));
+    // letters: drop in with scale bounce + motion blur
+    const anim = (Ls, rots, t0) => Ls.forEach((s, i) => {
+      const p = prog(t, t0 + i * .045, t0 + i * .045 + .34);
+      const e = ob(p, 2.2);
+      s.style.opacity = p > 0 ? clamp(p * 4) : 0;
+      s.style.transform = `translateY(${lerp(-300, 0, e)}px) scale(${lerp(1.9, 1, e)}) rotate(${lerp(rots[i], 0, e)}deg)`;
+      s.style.filter = `blur(${(1 - clamp(p * 1.6)) * 16}px)`;
+    });
+    anim(L1, rot1, .06); anim(L2, rot2, .2);
+    // "@ KPT!" slam
+    const lp = prog(t, .55, .74);
+    label.style.opacity = lp > 0 ? 1 : 0;
+    tf(label, 0, 0, lerp(3.2, 1, oc(lp)) + .06 * Math.sin(prog(t, .74, 1.1) * Math.PI) * (lp >= 1 ? 1 : 0), lerp(-18, -5, oc(lp)));
+    // date strip
+    const dp = prog(t, 1.55, 1.85);
+    date.style.opacity = dp > 0 ? 1 : 0;
+    date.style.clipPath = `inset(0 ${(1 - oc(dp)) * 100}% 0 0)`;
+    tf(date, 0, 0, 1, lerp(4, 2, oc(dp)));
+    DL.forEach((s, i) => {
+      const p = prog(t, 1.62 + i * .03, 1.62 + i * .03 + .25);
+      s.style.transform = `translateY(${lerp(60, 0, ob(p))}px)`;
+      s.style.opacity = p > 0 ? 1 : 0;
+    });
+    // subtle breathing and exit
+    const ex = ic(prog(t, 2.72, 2.98));
+    grp.style.opacity = 1 - ex;
+    tf(grp, 0, lerp(0, -90, ex), lerp(1 + .015 * Math.sin(t * 5), .82, ex));
+  });
+}
+
+// ============================================================================
+// 2. BOOTH 3-9
+// ============================================================================
+rip(3.0, '#0B1F4D', 101, null);
+{
+  // header sticker "MENTAL HEALTH BOOTH"
+  const hd = el('div', 'abs sticker', 'left:70px;top:200px;width:940px;height:190px;transform-origin:470px 95px');
+  el('div', 'abs', `width:940px;height:190px;background:#fff;border-radius:26px;clip-path:${tornClip(940, 190, 10, 12)}`, hd);
+  const ht = el('div', 'abs anton', 'left:0;top:34px;width:940px;text-align:center;font-size:104px;color:var(--navy);letter-spacing:2px', hd);
+  const HL = letters(ht, 'MENTAL HEALTH BOOTH');
+  const sw = svg(700, 60, `<path d="M10 40 Q180 10 350 34 T690 26" pathLength="1" fill="none" stroke="#E9B949" stroke-width="14"
+      stroke-linecap="round" stroke-dasharray="1 1" stroke-dashoffset="1"/>`, 'left:120px;top:150px', hd);
+  const swp = sw.querySelector('path');
+  const pin = el('div', 'abs', 'left:-26px;top:-30px', hd, icon('heart', 92));
+
+  // illustrated icons around the banner
+  const spots = [['brain', 745, 560, 170, -8], ['bubble', 800, 830, 150, 6], ['smile', 735, 1100, 150, -6],
+                 ['sprout', 860, 1330, 140, 8], ['star', 120, 1480, 110, -12], ['hands', 640, 1460, 160, 4]];
+  const icons = spots.map(([n, x, y, s, r], i) => {
+    const e = el('div', 'abs sticker', `left:${x}px;top:${y}px;width:${s}px;height:${s}px;transform-origin:50% 50%`, null, icon(n, s));
+    return { e, r, t0: 3.5 + i * .12, ph: i * 1.3 };
+  });
+
+  // chips "SCREENING • AWARENESS • SUPPORT"
+  const chipRow = el('div', 'abs', 'left:0;top:1390px;width:1080px;height:300px');
+  const words = ['SCREENING', 'AWARENESS', 'SUPPORT'];
+  const chips = words.map((w, i) => {
+    const c = el('div', 'abs mont sticker', `top:${i * 98}px;left:0;width:1080px;text-align:center`, chipRow);
+    el('span', '', `display:inline-block;background:${i === 1 ? 'var(--gold)' : 'var(--navy)'};color:${i === 1 ? 'var(--navy)' : '#fff'};
+      font-size:58px;letter-spacing:5px;padding:14px 38px 12px;border-radius:44px;border:5px solid #fff`, c,
+      (i ? '<span style="color:' + (i === 1 ? '#0B1F4D' : '#E9B949') + '">•</span> ' : '') + w + (i < 2 ? '' : ''));
+    return c;
+  });
+
+  // sparkles beside the smiling visitor (7.2s)
+  const sp = [doodle('spark', 120, '#F7D98B', 'left:640px;top:330px'), doodle('spark', 80, '#fff', 'left:300px;top:520px'),
+              doodle('star', 90, '#F7D98B', 'left:760px;top:640px')];
+
+  on(t => {
+    const vis = t >= 3.2 && t < 9.0;
+    show(hd, vis);
+    if (vis) {
+      const p = prog(t, 3.28, 3.6);
+      // shrink to a corner tag when the people shots start
+      const k = ioc(prog(t, 4.9, 5.25));
+      const out = ic(prog(t, 8.72, 8.95));
+      hd.style.opacity = 1 - out;
+      tf(hd, lerp(0, -255, k), lerp(0, -95, k), lerp(0, 1, ob(p, 2.4)) * lerp(1, .52, k) * (1 - out * .5), lerp(-3, -2, k) + Math.sin(t * 3) * .8);
+      HL.forEach((s, i) => { const q = prog(t, 3.36 + i * .018, 3.36 + i * .018 + .2); s.style.opacity = q > 0 ? 1 : 0; s.style.transform = `translateY(${lerp(40, 0, ob(q))}px)`; });
+      swp.setAttribute('stroke-dashoffset', 1 - oc(prog(t, 3.6, 3.95)));
+      tf(pin, 0, 0, ob(prog(t, 3.5, 3.75)), -14 + Math.sin(t * 4) * 6);
+    }
+    icons.forEach(o => {
+      const v = t >= o.t0 && t < 5.05;
+      if (!show(o.e, v)) return;
+      const p = prog(t, o.t0, o.t0 + .28), q = prog(t, 4.85, 5.02);
+      tf(o.e, Math.sin(t * 2 + o.ph) * 8 + (t - o.t0) * 6, Math.cos(t * 2.4 + o.ph) * 10 - (t - o.t0) * 14,
+        ob(p, 2.6) * (1 - ic(q)), o.r + Math.sin(t * 3 + o.ph) * 4);
+    });
+    const cv = t >= 5.2 && t < 9.0;
+    show(chipRow, cv);
+    if (cv) chips.forEach((c, i) => {
+      const p = prog(t, 5.25 + i * .25, 5.25 + i * .25 + .3), q = prog(t, 8.7 + i * .05, 8.9 + i * .05);
+      c.style.opacity = clamp(p * 3) * (1 - q);
+      tf(c, lerp(i % 2 ? 300 : -300, 0, oq(p)) + q * (i % 2 ? -200 : 200), Math.sin(t * 2.2 + i) * 3, lerp(.6, 1, ob(p)), lerp(i % 2 ? 6 : -6, i === 1 ? 1.5 : -1.5, oq(p)));
+    });
+    sp.forEach((d, i) => {
+      const a = 7.15 + i * .12;
+      if (!show(d, t >= a && t < 8.6)) return;
+      d.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, a, a + .25)));
+      d.style.opacity = 1 - prog(t, 8.3, 8.6);
+      tf(d, 0, 0, .9 + .1 * Math.sin(t * 8 + i));
+    });
+  });
+}
+
+// ============================================================================
+// 3. TALK 9-17
+// ============================================================================
+iris(9.0, '#0B1F4D');
+{
+  const g = el('div', 'abs', 'width:1080px;height:1920px');
+  const a = el('div', 'abs anton', 'left:70px;top:1100px;font-size:190px;color:#fff;letter-spacing:3px', g);
+  const AL = letters(a, "LET'S TALK", 'text-shadow:8px 8px 0 #0B1F4D');
+  const b = el('div', 'abs cav', 'left:600px;top:1270px;font-size:150px;color:var(--gold);transform-origin:0 50%;text-shadow:4px 4px 0 #0B1F4D', g, 'about');
+  const cWrap = el('div', 'abs sticker', 'left:50px;top:1420px;width:980px;height:200px', g);
+  const cBg = el('div', 'abs', `width:980px;height:200px;background:#fff;clip-path:${tornClip(980, 200, 14, 31)}`, cWrap);
+  const cT = el('div', 'abs anton', 'left:0;top:30px;width:980px;text-align:center;font-size:136px;color:var(--navy);letter-spacing:3px', cWrap);
+  const CL = letters(cT, 'MENTAL HEALTH');
+  const bub = doodle('bubble', 190, '#F7D98B', 'left:820px;top:930px', 7);
+  const und = doodle('squiggle', 300, '#E9B949', 'left:620px;top:1330px', 8);
+  on(t => {
+    if (!show(g, t >= 9.1 && t < 12.0)) { show(bub, false); show(und, false); return; }
+    show(bub, true); show(und, true);
+    const out = ic(prog(t, 11.7, 11.95));
+    g.style.opacity = 1 - out; bub.style.opacity = 1 - out; und.style.opacity = 1 - out;
+    tf(g, lerp(0, -160, out), 0);
+    AL.forEach((s, i) => { const p = prog(t, 9.16 + i * .04, 9.16 + i * .04 + .3); s.style.opacity = p > 0 ? 1 : 0; s.style.transform = `translateX(${lerp(-220, 0, oq(p))}px) skewX(${lerp(-25, 0, oq(p))}deg)`; s.style.filter = `blur(${(1 - clamp(p * 1.5)) * 10}px)`; });
+    const bp = prog(t, 9.62, 9.9);
+    b.style.opacity = bp > 0 ? 1 : 0; tf(b, 0, 0, ob(bp, 2.5), -8 + Math.sin(t * 3) * 2);
+    const cp = prog(t, 9.85, 10.15);
+    cWrap.style.clipPath = `inset(0 ${(1 - oc(cp)) * 100}% 0 0)`;
+    cWrap.style.opacity = cp > 0 ? 1 : 0;
+    tf(cWrap, 0, 0, 1, -2);
+    CL.forEach((s, i) => { const p = prog(t, 9.95 + i * .025, 9.95 + i * .025 + .22); s.style.opacity = p > 0 ? 1 : 0; s.style.transform = `translateY(${lerp(50, 0, ob(p))}px)`; });
+    bub.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, 10.1, 10.5)));
+    tf(bub, 0, Math.sin(t * 3) * 6, 1, 8);
+    und.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, 9.8, 10.1)));
+  });
+}
+{
+  // quote: lower-third + karaoke subtitle (real audio excerpt, 12.70-13.95)
+  const lt = el('div', 'abs sticker', 'left:60px;top:250px;width:700px;height:170px');
+  const bar = el('div', 'abs', 'left:0;top:0;width:14px;height:170px;background:var(--gold);border-radius:4px', lt);
+  const card = el('div', 'abs', 'left:14px;top:0;width:686px;height:170px;background:rgba(11,31,77,.88);border-radius:0 14px 14px 0;transform-origin:0 50%', lt);
+  const n1 = el('div', 'abs mont', 'left:42px;top:30px;font-size:58px;color:#fff;letter-spacing:2px;white-space:nowrap', card, 'DR FAKRUL AZREN');
+  const n2 = el('div', 'abs mont', 'left:44px;top:104px;font-size:34px;font-weight:600;color:var(--gold2);letter-spacing:1px;white-space:nowrap', card, 'Ceramah · Mengurus Overthinking');
+  const sub = el('div', 'abs', 'left:0;top:1370px;width:1080px;text-align:center');
+  const qm = el('div', 'abs play', 'left:150px;top:1200px;font-size:220px;color:var(--gold);font-style:italic', null, '&ldquo;');
+  const box = el('span', 'mont sticker', 'display:inline-block;background:rgba(11,31,77,.9);border:5px solid var(--gold);border-radius:26px;padding:26px 44px 22px;font-size:84px;color:#fff;line-height:1.15', sub);
+  const WORDS = [['Kita', 12.76, 12.82], ['validate', 12.82, 13.10], ['emosi', 13.10, 13.60], ['kita.', 13.60, 13.80]];
+  const ws = WORDS.map(([w], i) => { const s = el('span', '', 'display:inline-block;margin:0 10px', box, w); if (i === 1) el('br', '', '', box); return s; });
+  on(t => {
+    const v = t >= 12.02 && t < 14.0;
+    show(lt, v); show(sub, v); show(qm, v);
+    if (!v) return;
+    const p = oq(prog(t, 12.05, 12.4)), out = ic(prog(t, 13.75, 13.98));
+    lt.style.opacity = 1 - out;
+    tf(lt, lerp(-760, 0, p), 0);
+    card.style.transform = `scaleX(${oq(prog(t, 12.12, 12.45))})`;
+    n1.style.opacity = prog(t, 12.3, 12.45); n2.style.opacity = prog(t, 12.4, 12.55);
+    const sp = prog(t, 12.6, 12.78);
+    sub.style.opacity = clamp(sp * 2) * (1 - out);
+    tf(sub, 0, lerp(50, 0, oc(sp)), lerp(.9, 1, ob(sp)));
+    qm.style.opacity = clamp(sp * 2) * (1 - out) * .95;
+    tf(qm, 0, lerp(-40, 0, oc(sp)), ob(sp), -6);
+    ws.forEach((s, i) => {
+      const [, a] = WORDS[i];
+      const k = prog(t, a - .02, a + .08);
+      s.style.color = k > 0 ? 'var(--gold2)' : '#fff';
+      s.style.transform = `translateY(${-6 * Math.sin(k * Math.PI)}px) scale(${1 + .08 * Math.sin(k * Math.PI)})`;
+    });
+  });
+}
+{
+  // audience doodles 14.0-15.5
+  const ds = [doodle('heart', 110, '#FF6B5B', 'left:90px;top:300px', 7), doodle('bubble', 150, '#fff', 'left:800px;top:240px', 6),
+              doodle('burst', 120, '#F7D98B', 'left:470px;top:180px', 7)];
+  on(t => ds.forEach((d, i) => {
+    const a = 14.12 + i * .15;
+    if (!show(d, t >= a && t < 15.5)) return;
+    d.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, a, a + .3)));
+    d.style.opacity = 1 - prog(t, 15.3, 15.5);
+    tf(d, 0, Math.sin(t * 4 + i) * 6, 1 + .05 * Math.sin(t * 6 + i), i * 6 - 6);
+  }));
+}
+{
+  // freeze-frame cut-out 16.5-17.0 (stage), "Learn • Connect • Empower" 14.5-17.0
+  const fz = el('div', 'abs full');
+  const fzImg = el('img', 'abs full', 'filter:grayscale(.7) brightness(.55) contrast(1.05)', fz); fzImg.src = A + 'freeze1.png';
+  el('div', 'abs full', 'background:radial-gradient(circle at 50% 45%, rgba(22,53,122,.25), rgba(11,31,77,.75));', fz);
+  el('div', 'abs full', 'background-image:radial-gradient(rgba(233,185,73,.35) 2.5px, transparent 3px);background-size:22px 22px;opacity:.55', fz);
+  const rays = svg(1080, 1920, Array.from({ length: 14 }, (_, i) => {
+    const a = i / 14 * Math.PI * 2;
+    return `<path d="M540 760 L${540 + Math.cos(a) * 1500} ${760 + Math.sin(a) * 1500} L${540 + Math.cos(a + .1) * 1500} ${760 + Math.sin(a + .1) * 1500}Z" fill="#E9B949" opacity=".16"/>`;
+  }).join(''), 'transform-origin:540px 760px', fz);
+  const cut = el('img', 'abs full', `transform-origin:540px 1500px;filter:drop-shadow(8px 0 0 #fff) drop-shadow(-8px 0 0 #fff) drop-shadow(0 8px 0 #fff) drop-shadow(0 -8px 0 #fff) drop-shadow(0 20px 30px rgba(0,0,0,.5))`, fz);
+  cut.src = A + 'freeze1_cut.png';
+  const lce = el('div', 'abs', 'left:70px;top:1180px;width:900px;height:420px');
+  const items = ['Learn', 'Connect', 'Empower'].map((w, i) =>
+    el('div', 'abs mont', `left:0;top:${i * 128}px;font-size:96px;font-weight:900;color:#fff;letter-spacing:1px;
+      text-shadow:6px 6px 0 #0B1F4D;white-space:nowrap`, lce, `<span style="color:#E9B949">•</span> ${w}`));
+  on(t => {
+    const fv = t >= 16.5 && t < 17.02;
+    show(fz, fv);
+    if (fv) {
+      const p = prog(t, 16.5, 16.62);
+      fz.style.opacity = 1;
+      tf(cut, 0, lerp(30, -20, oc(prog(t, 16.5, 17.0))), lerp(1, 1.09, ob(p, 2)), lerp(0, -2, p));
+      tf(rays, 0, 0, 1, (t - 16.5) * 40);
+    }
+    const lv = t >= 14.45 && t < 17.0;
+    show(lce, lv);
+    if (lv) items.forEach((it, i) => {
+      const a = 14.5 + i * .5, p = prog(t, a, a + .3), out = ic(prog(t, 16.82, 16.98));
+      it.style.opacity = clamp(p * 3) * (1 - out);
+      const big = fv ? 1.06 : 1;
+      tf(it, lerp(-300, 0, oq(p)), 0, lerp(.5, 1, ob(p, 2.4)) * big, lerp(-8, -3, oq(p)));
+    });
+  });
+}
+
+// ============================================================================
+// 4. MONTAGE 17-24
+// ============================================================================
+rip(17.0, '#F7F1E3', 202, '#E9B949');
+{
+  // film-strip sprockets 17.0-19.0
+  const fs = el('div', 'abs full');
+  const mkBand = x => {
+    const b = el('div', 'abs', `left:${x}px;top:-200px;width:78px;height:2400px;background:#0b0b0f;opacity:.92`, fs);
+    for (let i = 0; i < 26; i++) el('div', 'abs', `left:20px;top:${i * 92 + 20}px;width:38px;height:56px;border-radius:8px;background:#f2efe8`, b);
+    return b;
+  };
+  const b1 = mkBand(0), b2 = mkBand(1002);
+  const frameLine = el('div', 'abs', 'left:78px;top:0;width:924px;height:1920px;box-shadow:inset 0 0 0 6px rgba(255,255,255,.75)', fs);
+  const dd = [doodle('star', 120, '#F7D98B', 'left:780px;top:260px', 7), doodle('arrow', 170, '#fff', 'left:150px;top:420px', 7),
+              doodle('loop', 200, '#FF9EC4', 'left:700px;top:1500px', 7), doodle('spark', 110, '#fff', 'left:170px;top:1450px', 7)];
+  on(t => {
+    const v = t >= 17.0 && t < 19.0;
+    show(fs, v);
+    if (v) {
+      const k = prog(t, 17.0, 17.15) * (1 - prog(t, 18.85, 19.0));
+      fs.style.opacity = k;
+      const off = ((t - 17) * 460) % 92;
+      tf(b1, lerp(-90, 0, k), off); tf(b2, lerp(90, 0, k), -off);
+    }
+    dd.forEach((d, i) => {
+      const a = i < 2 ? 17.12 + i * .1 : 18.05 + (i - 2) * .1;
+      const e = i < 2 ? 18.0 : 19.0;
+      if (!show(d, t >= a && t < e)) return;
+      d.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, a, a + .25)));
+      tf(d, 0, 0, ob(prog(t, a, a + .25)), Math.sin(t * 5 + i) * 6);
+    });
+  });
+}
+{
+  // split-screen frame + "SMALL CONVERSATIONS." 19.0-20.5
+  const sf = el('div', 'abs full');
+  el('div', 'abs full', 'box-shadow:inset 0 0 0 16px #fff', sf);
+  const div = el('div', 'abs', 'left:0;top:952px;width:1080px;height:16px;background:#fff', sf);
+  el('div', 'abs', 'left:0;top:6px;width:1080px;height:4px;background:var(--gold)', div);
+  const tag = el('div', 'abs sticker', 'left:40px;top:885px;width:1000px;height:150px;transform-origin:500px 75px', sf);
+  el('div', 'abs', `width:1000px;height:150px;background:var(--navy);clip-path:${tornClip(1000, 150, 10, 77)}`, tag);
+  const tt = el('div', 'abs anton', 'left:0;top:26px;width:1000px;text-align:center;font-size:100px;color:#fff;letter-spacing:2px', tag);
+  const TL = letters(tt, 'SMALL CONVERSATIONS.');
+  const bl = el('div', 'abs sticker', 'left:30px;top:745px', sf, icon('bubble', 130));
+  const br = el('div', 'abs sticker', 'left:900px;top:1050px', sf, icon('bubble', 120));
+  on(t => {
+    if (!show(sf, t >= 19.0 && t < 20.5)) return;
+    const p = prog(t, 19.12, 19.4), out = ic(prog(t, 20.3, 20.48));
+    tag.style.opacity = (p > 0 ? 1 : 0) * (1 - out);
+    tf(tag, 0, 0, ob(p, 2.2) * (1 - out * .4), -2 + Math.sin(t * 4) * .8);
+    TL.forEach((s, i) => { const q = prog(t, 19.18 + i * .02, 19.18 + i * .02 + .2); s.style.opacity = q > 0 ? 1 : 0; s.style.transform = `translateY(${lerp(40, 0, ob(q))}px)`; });
+    tf(bl, 0, Math.sin(t * 3) * 8, ob(prog(t, 19.35, 19.6)) * (1 - out), -10);
+    tf(br, 0, Math.cos(t * 3) * 8, ob(prog(t, 19.45, 19.7)) * (1 - out), 10);
+    div.style.transform = `scaleX(${oc(prog(t, 19.0, 19.2))})`;
+  });
+}
+{
+  // freeze-frame cut-out 21.0-21.5 + "BIG IMPACT." slam 21.0-24.0
+  const fz = el('div', 'abs full');
+  const fi = el('img', 'abs full', 'filter:grayscale(.6) brightness(.5)', fz); fi.src = A + 'freeze2.png';
+  el('div', 'abs full', 'background:radial-gradient(circle at 60% 40%, rgba(233,185,73,.25), rgba(11,31,77,.7));', fz);
+  const rays = svg(1080, 1920, Array.from({ length: 18 }, (_, i) => {
+    const a = i / 18 * Math.PI * 2;
+    return `<path d="M700 700 L${700 + Math.cos(a) * 1600} ${700 + Math.sin(a) * 1600} L${700 + Math.cos(a + .08) * 1600} ${700 + Math.sin(a + .08) * 1600}Z" fill="#fff" opacity=".12"/>`;
+  }).join(''), 'transform-origin:700px 700px', fz);
+  const cut = el('img', 'abs full', `transform-origin:700px 1300px;filter:drop-shadow(8px 0 0 #fff) drop-shadow(-8px 0 0 #fff) drop-shadow(0 8px 0 #fff) drop-shadow(0 -8px 0 #fff) drop-shadow(0 20px 30px rgba(0,0,0,.5))`, fz);
+  cut.src = A + 'freeze2_cut.png';
+  const sp = [doodle('burst', 170, '#F7D98B', 'left:560px;top:180px', 8), doodle('spark', 110, '#fff', 'left:880px;top:420px', 7)];
+  sp.forEach(d => fz.appendChild(d));
+
+  const big = el('div', 'abs', 'left:0;top:1300px;width:1080px;height:300px;transform-origin:540px 150px');
+  const bt = el('div', 'abs anton', `left:0;top:0;width:1080px;text-align:center;font-size:205px;color:var(--gold);letter-spacing:3px;
+     text-shadow:3px 3px 0 #0B1F4D,6px 6px 0 #0B1F4D,9px 9px 0 #0B1F4D,12px 12px 0 #0B1F4D,14px 14px 22px rgba(0,0,0,.45)`, big);
+  const BL = letters(bt, 'BIG IMPACT.');
+  on(t => {
+    const fv = t >= 21.0 && t < 21.5;
+    show(fz, fv);
+    if (fv) {
+      const p = prog(t, 21.0, 21.14);
+      tf(cut, 0, 0, lerp(1, 1.08, ob(p, 2.2)), lerp(0, 2, p));
+      tf(rays, 0, 0, 1, (t - 21) * -50);
+      sp.forEach((d, i) => d.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, 21.05 + i * .08, 21.3 + i * .08))));
+    }
+    const v = t >= 21.0 && t < 24.0;
+    if (!show(big, v)) return;
+    const p = prog(t, 21.0, 21.45), out = ic(prog(t, 23.78, 23.98));
+    // drops lower when the collage arrives
+    const down = ioc(prog(t, 22.45, 22.7));
+    big.style.opacity = 1 - out;
+    const shake = (1 - prog(t, 21.0, 21.4)) * 14;
+    tf(big, Math.sin(t * 90) * shake, lerp(0, 230, down) + Math.cos(t * 77) * shake, lerp(2.4, 1, oe(p)) * lerp(1, .78, down) * (1 + out * .3), -3);
+    BL.forEach((s, i) => { const q = prog(t, 21.0 + i * .025, 21.0 + i * .025 + .18); s.style.opacity = q > 0 ? 1 : 0; });
+  });
+}
+{
+  // polaroid collage 22.5-24.0
+  const dim = el('div', 'abs full', 'background:rgba(11,31,77,.45)');
+  const pol = [['pol1.jpg', 120, 210, -9], ['pol2.jpg', 470, 300, 7], ['pol3.jpg', 260, 660, -3]].map(([src, x, y, r], i) => {
+    const p = el('div', 'abs sticker', `left:${x}px;top:${y}px;width:470px;height:600px;background:#fdfbf6;border-radius:6px;transform-origin:235px 300px`);
+    const im = el('img', 'abs', 'left:22px;top:22px;width:426px;height:480px;object-fit:cover', p); im.src = A + src;
+    el('div', 'abs', `left:160px;top:-26px;width:150px;height:52px;background:${['#E9B949', '#7CC8FF', '#FF9EC4'][i]};opacity:.85;transform:rotate(${i % 2 ? 4 : -5}deg)`, p);
+    return { p, r, t0: 22.55 + i * .25, dx: i % 2 ? 900 : -900 };
+  });
+  on(t => {
+    const v = t >= 22.5 && t < 24.0;
+    show(dim, v);
+    dim.style.opacity = prog(t, 22.5, 22.65) * (1 - prog(t, 23.8, 24.0));
+    pol.forEach(o => {
+      if (!show(o.p, v && t >= o.t0)) return;
+      const p = prog(t, o.t0, o.t0 + .28), out = ic(prog(t, 23.78, 23.98));
+      o.p.style.opacity = 1 - out;
+      tf(o.p, lerp(o.dx, 0, oq(p)), lerp(-300, 0, oq(p)) - out * 200, lerp(1.25, 1, oq(p)) * (1 - out * .2), lerp(o.r * 5, o.r, oq(p)) + Math.sin(t * 2 + o.r) * .8);
+    });
+  });
+}
+
+// ============================================================================
+// 5. ENDING 24-30
+// ============================================================================
+{
+  // warm light leaks + bottom gradient for type
+  const grad = el('div', 'abs full', 'background:linear-gradient(180deg, rgba(0,0,0,0) 52%, rgba(6,14,38,.72) 100%)');
+  const leak1 = el('div', 'abs', 'width:1100px;height:1100px;border-radius:50%;background:radial-gradient(circle, rgba(255,190,90,.55), rgba(255,140,60,0) 65%);mix-blend-mode:screen');
+  const leak2 = el('div', 'abs', 'width:900px;height:900px;border-radius:50%;background:radial-gradient(circle, rgba(255,230,170,.45), rgba(255,200,120,0) 65%);mix-blend-mode:screen');
+  on(t => {
+    const v = t >= 24.0;
+    show(grad, v); show(leak1, v); show(leak2, v);
+    if (!v) return;
+    const k = prog(t, 24.0, 24.6);
+    grad.style.opacity = k;
+    leak1.style.opacity = k * (.6 + .3 * Math.sin(t * 1.3));
+    leak2.style.opacity = k * (.5 + .3 * Math.cos(t * 1.1));
+    tf(leak1, -500 + (t - 24) * 120, -300 + Math.sin(t * .7) * 80);
+    tf(leak2, 650 - (t - 24) * 90, 1100 + Math.cos(t * .6) * 120);
+  });
+
+  // "Terima Kasih, Kementerian Pendidikan Tinggi!"
+  const tk = el('div', 'abs', 'left:0;top:1210px;width:1080px;height:330px');
+  const t1 = el('div', 'abs play', 'left:0;top:0;width:1080px;text-align:center;font-size:140px;font-style:italic;font-weight:600;color:var(--gold2);text-shadow:0 6px 24px rgba(0,0,0,.5)', tk, 'Terima Kasih,');
+  const line = el('div', 'abs', 'left:340px;top:178px;width:400px;height:4px;background:linear-gradient(90deg,transparent,#E9B949,transparent);transform-origin:50% 50%', tk);
+  const t2 = el('div', 'abs mont', 'left:0;top:206px;width:1080px;text-align:center;font-size:50px;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.6)', tk, 'Kementerian Pendidikan Tinggi!');
+  on(t => {
+    if (!show(tk, t >= 24.35 && t < 26.85)) return;
+    const p1 = prog(t, 24.4, 24.95), p2 = prog(t, 24.75, 25.3), out = ioc(prog(t, 26.4, 26.8));
+    tk.style.opacity = 1 - out;
+    tf(tk, 0, lerp(0, -60, out));
+    t1.style.clipPath = `inset(${(1 - oc(p1)) * 100}% 0 0 0)`;
+    tf(t1, 0, lerp(40, 0, oc(p1)));
+    t1.style.letterSpacing = lerp(14, 1, oc(p1)) + 'px';
+    line.style.transform = `scaleX(${oc(prog(t, 24.85, 25.3))})`;
+    t2.style.opacity = oc(p2);
+    t2.style.letterSpacing = lerp(8, 1.5, oc(p2)) + 'px';
+  });
+
+  // 2.5D selfie: background pans across the audience, Dr Azren's cut-out grows on its own layer
+  const sel = el('div', 'abs full', 'overflow:hidden;background:#0B1F4D');
+  const pan = el('div', 'abs', 'width:3410px;height:1920px;transform-origin:0 0', sel);
+  const bg = el('img', 'abs', 'width:3410px;height:1920px;transform-origin:2600px 960px', pan); bg.src = A + 'selfie.jpg';
+  // cut-out maps to source x 2200-4000 -> 1875.5-3410 in the 3410-wide background
+  const fg = el('img', 'abs', 'left:1875.5px;top:0;width:1534.5px;height:1920px;transform-origin:725px 1920px', pan); fg.src = A + 'selfie_cut.png';
+  const sgrad = el('div', 'abs full', 'background:linear-gradient(180deg, rgba(6,14,38,.25) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 55%, rgba(6,14,38,.85) 100%)', sel);
+  // gold particles
+  const parts = [];
+  { const r = rng(99); for (let i = 0; i < 70; i++) { const s = 4 + r() * 12; const e = el('div', 'abs', `width:${s}px;height:${s}px;border-radius:50%;background:radial-gradient(circle,#fff6d6,#E9B949 55%,rgba(233,185,73,0) 72%);mix-blend-mode:screen`, sel); parts.push({ e, x: r() * 1080, y: 400 + r() * 1700, v: 60 + r() * 160, ph: r() * 6.28, d: r() * 1.2 }); } }
+  const nm = el('div', 'abs play', 'left:0;top:1350px;width:1080px;text-align:center;font-size:112px;font-weight:700;color:#fff;text-shadow:0 6px 26px rgba(0,0,0,.55)', sel);
+  const NL = letters(nm, 'Dr Fakrul Azren');
+  const nline = el('div', 'abs', 'left:290px;top:1486px;width:500px;height:5px;background:linear-gradient(90deg,transparent,#E9B949,transparent)', sel);
+  const slog = el('div', 'abs cav', 'left:0;top:1500px;width:1080px;text-align:center;font-size:112px;color:var(--gold2);text-shadow:0 5px 20px rgba(0,0,0,.6)', sel, 'Spread Positivity');
+  const sparkL = doodle('spark', 90, '#F7D98B', 'left:150px;top:1515px', 7), sparkR = doodle('spark', 90, '#F7D98B', 'left:840px;top:1515px', 7);
+  sel.appendChild(sparkL); sel.appendChild(sparkR);
+  const fade = el('div', 'abs full', 'background:#000;opacity:0');
+  on(t => {
+    if (!show(sel, t >= 26.5)) { show(fade, false); return; }
+    const fin = prog(t, 26.5, 26.95);
+    sel.style.opacity = oc(fin);
+    sel.style.filter = `blur(${(1 - oc(fin)) * 12}px)`;
+    // pan from the smiling audience to Dr Azren's smile
+    const k = ioc(prog(t, 26.5, 28.7));
+    const tx = lerp(-1023, -2182, k) - (t - 26.5) * 12;
+    pan.style.transform = `translate(${tx}px,0)`;
+    bg.style.transform = `scale(${lerp(1.0, 1.035, prog(t, 26.5, 30))})`;
+    fg.style.transform = `scale(${lerp(1.0, 1.09, oc(prog(t, 26.5, 30)))})`;
+    parts.forEach(o => {
+      const tt = t - 26.5 - o.d;
+      o.e.style.opacity = tt > 0 ? clamp(tt * 2) * (.5 + .5 * Math.sin(t * 5 + o.ph)) : 0;
+      o.e.style.transform = `translate(${o.x + Math.sin(t * 1.5 + o.ph) * 30}px,${o.y - Math.max(0, tt) * o.v}px)`;
+    });
+    NL.forEach((s, i) => {
+      const p = prog(t, 27.25 + i * .035, 27.25 + i * .035 + .4);
+      s.style.opacity = oc(p); s.style.transform = `translateY(${lerp(40, 0, oc(p))}px)`;
+      s.style.filter = `blur(${(1 - oc(p)) * 8}px)`;
+    });
+    nline.style.transform = `scaleX(${oc(prog(t, 27.7, 28.2))})`;
+    slog.style.clipPath = `inset(0 ${(1 - ioc(prog(t, 27.85, 28.5))) * 100}% 0 0)`;
+    [sparkL, sparkR].forEach((d, i) => {
+      const a = 28.4 + i * .1;
+      d.path.setAttribute('stroke-dashoffset', 1 - oc(prog(t, a, a + .3)));
+      tf(d, 0, 0, 1 + .08 * Math.sin(t * 6 + i));
+    });
+    show(fade, t >= 29.2);
+    fade.style.opacity = ioc(prog(t, 29.2, 30.0));
+  });
+}
+
+// ---------- API ---------------------------------------------------------------
+window.seek = t => { for (const f of C) f(t); };
+window.ready = (async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  window.seek(0);
+  return true;
+})();
+</script>
+</body>
+</html>
