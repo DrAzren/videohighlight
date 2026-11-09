@@ -1,0 +1,219 @@
+{
+ "_about": "Meet & Greet Dr Azren - Pesta Buku Nogori 2026, USIM. Source: Google Photos album 'Meet and Greet USIM' (clips numbered by album order 00-58; 27.jpg is the stage photo, 58_cover.jpg is the last frame of clip 58). Render: python3 tools/make_uplift.py work/music.wav 4.35; python3 tools/make_overlay.py work/overlay && (cd work/overlay && npx hyperframes render --format mov -o ../overlay.mov); python3 tools/reel_edit.py reels/meetgreet_cuts.json OUT.mp4",
+ "media": "work/media",
+ "music": "work/music.wav",
+ "overlay": "work/overlay.mov",
+ "music_db": -3,
+ "duck_db": -16,
+ "fade_out": 1.0,
+ "segments": [
+  {
+   "src": "45.mp4",
+   "in": 16.4,
+   "dur": 4.35,
+   "z0": 1.4,
+   "z1": 1.5,
+   "fx": 0.5,
+   "fy": 0.46,
+   "voice": true,
+   "note": "HOOK: bukan scroll telefon + open-palm gesture"
+  },
+  {
+   "src": "27.jpg",
+   "dur": 2.0,
+   "z0": 1.0,
+   "z1": 1.08,
+   "fx": 0.5,
+   "fy": 0.42,
+   "note": "stage + event poster"
+  },
+  {
+   "src": "16.mp4",
+   "in": 4.6,
+   "dur": 1.0,
+   "z0": 1.04,
+   "z1": 1.08,
+   "amb": 0.35
+  },
+  {
+   "src": "44.mp4",
+   "in": 12.4,
+   "dur": 1.0,
+   "z0": 1.06,
+   "z1": 1.1,
+   "amb": 0.35
+  },
+  {
+   "src": "33.mp4",
+   "in": 13.0,
+   "dur": 1.0,
+   "z0": 1.04,
+   "z1": 1.08,
+   "amb": 0.3
+  },
+  {
+   "src": "12.mp4",
+   "in": 0.3,
+   "dur": 1.0,
+   "z0": 1.06,
+   "z1": 1.1,
+   "amb": 0.3
+  },
+  {
+   "src": "31.mp4",
+   "in": 5.45,
+   "dur": 3.5,
+   "z0": 1.4,
+   "z1": 1.48,
+   "fx": 0.42,
+   "fy": 0.52,
+   "voice": true,
+   "note": "Mitos-mitos begini sebenarnya menyakitkan"
+  },
+  {
+   "src": "05.mp4",
+   "in": 2.4,
+   "dur": 0.92,
+   "z0": 1.08,
+   "z1": 1.12,
+   "fx": 0.55,
+   "amb": 0.3,
+   "note": "reaction beat after the line lands"
+  },
+  {
+   "src": "35.mp4",
+   "in": 3.9,
+   "dur": 1.0,
+   "z0": 1.04,
+   "z1": 1.08,
+   "amb": 0.35
+  },
+  {
+   "src": "26.mp4",
+   "in": 9.4,
+   "dur": 1.0,
+   "z0": 1.2,
+   "z1": 1.25,
+   "fx": 0.42,
+   "fy": 0.5,
+   "amb": 0.3
+  },
+  {
+   "src": "50.mp4",
+   "in": 1.32,
+   "dur": 2.7,
+   "z0": 1.25,
+   "z1": 1.32,
+   "fx": 0.5,
+   "fy": 0.45,
+   "voice": true,
+   "note": "Q: Macam mana kami nak bantu mereka?"
+  },
+  {
+   "src": "52.mp4",
+   "in": 18.04,
+   "dur": 2.71,
+   "z0": 1.45,
+   "z1": 1.52,
+   "fx": 0.32,
+   "fy": 0.52,
+   "voice": true,
+   "note": "A: untuk mereka dapatkan bantuan yang sepatutnya"
+  },
+  {
+   "src": "15.mp4",
+   "in": 1.28,
+   "dur": 4.17,
+   "z0": 1.35,
+   "z1": 1.45,
+   "fx": 0.45,
+   "fy": 0.5,
+   "voice": true,
+   "note": "Mungkin terdetik daripada itulah saya menulis buku ini"
+  },
+  {
+   "src": "56.mp4",
+   "in": 2.0,
+   "dur": 2.5,
+   "z0": 1.0,
+   "z1": 1.08,
+   "fx": 0.5,
+   "fy": 0.55,
+   "amb": 0.45,
+   "note": "pen close-up (match cut on hands)"
+  },
+  {
+   "src": "55.mp4",
+   "in": 0.0,
+   "dur": 2.0,
+   "z0": 1.05,
+   "z1": 1.1,
+   "fx": 0.5,
+   "fy": 0.5,
+   "amb": 0.45,
+   "note": "book handed over"
+  },
+  {
+   "src": "54.mp4",
+   "in": 6.5,
+   "dur": 2.5,
+   "z0": 1.08,
+   "z1": 1.12,
+   "fx": 0.5,
+   "fy": 0.55,
+   "amb": 0.6,
+   "note": "look up, laugh together"
+  },
+  {
+   "src": "58.mp4",
+   "in": 3.2,
+   "dur": 2.0,
+   "z0": 1.15,
+   "z1": 1.2,
+   "fx": 0.4,
+   "fy": 0.5,
+   "amb": 0.4,
+   "note": "gift accent"
+  },
+  {
+   "src": "57.mp4",
+   "in": 0.3,
+   "dur": 6.0,
+   "z0": 1.04,
+   "z1": 1.12,
+   "fx": 0.55,
+   "fy": 0.45,
+   "amb": 0.5,
+   "note": "book given back, both smile"
+  },
+  {
+   "src": "53.mp4",
+   "in": 1.0,
+   "dur": 5.0,
+   "cx": 0.62,
+   "cx1": 0.8,
+   "z0": 1.0,
+   "z1": 1.0,
+   "amb": 0.4,
+   "note": "group photo pan"
+  },
+  {
+   "src": "58.mp4",
+   "in": 9.95,
+   "dur": 1.0,
+   "z0": 1.0,
+   "z1": 1.0,
+   "amb": 0.3,
+   "note": "push to cover"
+  },
+  {
+   "src": "58_cover.jpg",
+   "dur": 4.0,
+   "z0": 1.0,
+   "z1": 1.06,
+   "fx": 0.5,
+   "fy": 0.45,
+   "note": "hold the book title"
+  }
+ ]
+}
