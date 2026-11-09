@@ -28,21 +28,22 @@ CAPTIONS = [
         [("buat", 1.22), ("bila", 1.56), ("bangun", 1.84), ("pagi,", 2.12)]], "hook"),
     ("cap-hook2", 3.04, 4.42, None, [
         [("bukan", 3.14)], [("scroll", 3.54, True), ("telefon.", 3.86, True)]], "hook-big"),
-    ("cap-mitos", 10.45, 13.85, None, [
-        [("Mitos-mitos", 10.60), ("begini", 11.35)],
-        [("sebenarnya", 11.95), ("menyakitkan.", 12.42, True)]], "talk"),
-    ("cap-q", 16.85, 19.45, "Soalan audiens", [
-        [("Macam", 16.90), ("mana", 17.20), ("kami", 17.40)],
-        [("nak", 17.65), ("bantu", 18.45), ("mereka?", 18.75)]], "talk"),
-    ("cap-a", 19.52, 22.16, "Jawapan Dr Azren", [
-        [("…untuk", 19.57), ("mereka", 19.85), ("dapatkan", 20.21)],
-        [("bantuan", 20.93, True), ("yang", 21.33), ("sepatutnya", 21.45, True), ("lah.", 21.89)]], "talk talk-sm"),
-    ("cap-buku1", 22.21, 24.55, None, [
-        [("Mungkin", 22.25), ("terdetik", 22.97)],
-        [("daripada", 23.61), ("itulah", 23.99)]], "talk"),
-    ("cap-buku2", 24.55, 26.33, None, [
-        [("saya", 24.64), ("menulis", 24.99)],
-        [("buku", 25.44, True), ("ini.", 25.84, True)]], "talk"),
+    ("cap-mitos", 10.42, 13.27, None, [
+        [("Mitos-mitos", 10.50), ("begini", 11.27)],
+        [("sebenarnya", 11.91), ("menyakitkan.", 12.37, True)]], "talk"),
+    ("cap-q", 17.83, 20.43, "Soalan audiens", [
+        [("Macam", 17.88), ("mana", 18.18), ("kami", 18.38)],
+        [("nak", 18.63), ("bantu", 19.43), ("mereka?", 19.73)]], "talk"),
+    ("cap-a", 20.50, 23.13, None, [
+        [("…untuk", 20.55), ("mereka", 20.83), ("dapatkan", 21.19)],
+        [("bantuan", 21.91, True), ("yang", 22.31), ("sepatutnya", 22.43, True), ("lah.", 22.87)]], "talk talk-sm"),
+    # clip 15 with fillers removed (prep_meetgreet.py); times from Whisper large-v3 on the tightened audio
+    ("cap-buku1", 23.15, 24.77, None, [
+        [("Mungkin", 23.17), ("terdetik", 23.34)],
+        [("daripada", 24.10), ("itulah", 24.38)]], "talk"),
+    ("cap-buku2", 24.77, 26.33, None, [
+        [("saya", 24.80), ("menulis", 25.10)],
+        [("buku", 25.56, True), ("ini.", 26.02, True)]], "talk"),
 ]
 
 # scene windows (film time)
@@ -106,6 +107,7 @@ captions = f"""<template>
     font-size:58px; line-height:1.14; letter-spacing:-0.01em; word-spacing:0.14em; color:#fff;
     text-shadow:0 2px 10px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.6); }}
   #captions .w {{ display:inline-block; transform-origin:50% 70%; }}
+  #captions .hook, #captions .hook-big {{ bottom:auto; top:430px; }}
   #captions .hook .ln {{ font-size:58px; }}
   #captions .talk-sm .ln {{ font-size:50px; }}
   #captions .hook-big .ln {{ font-size:82px; font-weight:900; line-height:1.04; }}
@@ -133,16 +135,16 @@ INK_PATH = ("M 18 64 C 40 30, 74 26, 70 54 C 66 80, 30 78, 44 58 "
 title = f"""<template>
 <style>
   #title {{ position:absolute; inset:0; }}
-  #title-scrim {{ position:absolute; left:0; right:0; top:820px; height:640px; opacity:0;
-    background:linear-gradient(180deg, rgba(8,12,24,0) 0%, rgba(8,12,24,0.62) 38%, rgba(8,12,24,0.70) 100%); }}
-  #title-block {{ position:absolute; left:64px; top:930px; width:860px; overflow:visible; }}
+  #title-scrim {{ position:absolute; left:0; right:0; top:0px; height:860px; opacity:0;
+    background:linear-gradient(180deg, rgba(8,12,24,0.72) 0%, rgba(8,12,24,0.62) 55%, rgba(8,12,24,0) 100%); }}
+  #title-block {{ position:absolute; left:64px; top:236px; width:860px; overflow:visible; }}
   #title-kicker {{ font-family:'Inter',sans-serif; font-weight:700; font-size:30px; letter-spacing:0.22em;
     text-transform:uppercase; color:{YELLOW}; margin-bottom:14px; opacity:0; }}
   #title-l1, #title-l2 {{ display:block; font-family:'Montserrat',sans-serif; font-weight:900; font-size:116px;
     line-height:0.98; letter-spacing:-0.025em; color:#fff; text-shadow:0 4px 18px rgba(0,0,0,0.45); white-space:nowrap; }}
   #title .tw {{ display:inline-block; opacity:0; }}
-  #title-ink {{ position:absolute; left:-14px; top:226px; width:860px; height:110px; overflow:visible; }}
-  #title-sub {{ margin-top:74px; font-family:'Inter',sans-serif; font-weight:700; font-size:44px; color:#fff;
+  #title-ink {{ position:absolute; left:-14px; top:268px; width:860px; height:110px; overflow:visible; }}
+  #title-sub {{ margin-top:116px; font-family:'Inter',sans-serif; font-weight:700; font-size:44px; color:#fff;
     letter-spacing:0.005em; text-shadow:0 2px 10px rgba(0,0,0,0.5); white-space:nowrap; }}
   #title-sub .sw {{ display:inline-block; opacity:0; }}
   #title-sub .dot {{ color:{YELLOW}; }}

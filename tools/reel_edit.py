@@ -72,10 +72,12 @@ def segment(i, s, n):
         f"*min(t/{dur},1))':(ih-{HH})*{s.get('cy', 0.5)}",
         f"zoompan=z='{zexpr}':x='{xexpr}':y='{yexpr}':d=1:s={W}x{H}:fps={FPS}",
         "hqdn3d=1.5:1.2:3:3",
-        # warm, lifted grade shared by every shot so the cut feels like one film
-        "eq=contrast=1.06:saturation=1.12:gamma=1.03",
-        "colorbalance=rs=0.015:gs=0.0:bs=-0.025:rm=0.02:bm=-0.02:rh=0.01:bh=-0.015",
-        "cas=strength=0.35",
+        # warm, lifted grade shared by every shot so the cut feels like one film;
+        # a shot can replace it with its own "grade" (an ffmpeg filter chain)
+        *(s["grade"].split(";") if s.get("grade") else [
+            "eq=contrast=1.06:saturation=1.12:gamma=1.03",
+            "colorbalance=rs=0.015:gs=0.0:bs=-0.025:rm=0.02:bm=-0.02:rh=0.01:bh=-0.015",
+            "cas=strength=0.35"]),
         "setsar=1,format=yuv420p",
     ]
     v_in = (["-loop", "1", "-framerate", str(FPS), "-t", f"{dur:.3f}", "-i", str(src)] if is_img

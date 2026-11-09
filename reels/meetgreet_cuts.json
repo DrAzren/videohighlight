@@ -1,5 +1,5 @@
 {
- "_about": "Meet & Greet Dr Azren - Pesta Buku Nogori 2026, USIM. Source: Google Photos album 'Meet and Greet USIM' (clips numbered by album order 00-58; 27.jpg is the stage photo, 58_cover.jpg is the last frame of clip 58). Render: python3 tools/make_uplift.py work/music.wav 4.35; python3 tools/make_overlay.py work/overlay && (cd work/overlay && npx hyperframes render --format mov -o ../overlay.mov); python3 tools/reel_edit.py reels/meetgreet_cuts.json OUT.mp4",
+ "_about": "Meet & Greet Dr Azren - Pesta Buku Nogori 2026, USIM. Source: Google Photos album 'Meet and Greet USIM' (clips numbered by album order 00-58; 27.jpg is the stage photo, 58_cover.jpg is the last frame of clip 58). Render: python3 tools/prep_meetgreet.py work/media; python3 tools/make_uplift.py work/music.wav 4.35; python3 tools/make_overlay.py work/overlay && (cd work/overlay && npx hyperframes render --format mov -o ../overlay.mov); python3 tools/reel_edit.py reels/meetgreet_cuts.json OUT.mp4",
  "media": "work/media",
  "music": "work/music.wav",
  "overlay": "work/overlay.mov",
@@ -9,14 +9,15 @@
  "segments": [
   {
    "src": "45.mp4",
-   "in": 16.4,
    "dur": 4.35,
+   "in": 16.4,
    "z0": 1.4,
    "z1": 1.5,
    "fx": 0.5,
    "fy": 0.46,
    "voice": true,
-   "note": "HOOK: bukan scroll telefon + open-palm gesture"
+   "grade": "curves=master='0/0 0.15/0.11 0.45/0.47 0.8/0.86 1/1':red='0/0 0.5/0.53 1/1':blue='0/0.02 0.5/0.47 1/0.96';eq=saturation=1.28:gamma=1.06:brightness=0.015;unsharp=5:5:0.6;vignette=PI/4.5",
+   "note": "HOOK: bukan scroll telefon + open-palm gesture (own grade)"
   },
   {
    "src": "27.jpg",
@@ -29,69 +30,81 @@
   },
   {
    "src": "16.mp4",
-   "in": 4.6,
    "dur": 1.0,
+   "in": 4.6,
    "z0": 1.04,
    "z1": 1.08,
    "amb": 0.35
   },
   {
    "src": "44.mp4",
-   "in": 12.4,
    "dur": 1.0,
+   "in": 12.4,
    "z0": 1.06,
    "z1": 1.1,
    "amb": 0.35
   },
   {
-   "src": "33.mp4",
-   "in": 13.0,
-   "dur": 1.0,
-   "z0": 1.04,
-   "z1": 1.08,
-   "amb": 0.3
-  },
-  {
    "src": "12.mp4",
-   "in": 0.3,
    "dur": 1.0,
+   "in": 0.3,
    "z0": 1.06,
    "z1": 1.1,
    "amb": 0.3
   },
   {
+   "src": "36.mp4",
+   "dur": 1.0,
+   "in": 0.5,
+   "z0": 1.1,
+   "z1": 1.15,
+   "fx": 0.45,
+   "fy": 0.45,
+   "amb": 0.3
+  },
+  {
    "src": "31.mp4",
+   "dur": 2.95,
    "in": 5.45,
-   "dur": 3.5,
    "z0": 1.4,
-   "z1": 1.48,
+   "z1": 1.47,
    "fx": 0.42,
    "fy": 0.52,
    "voice": true,
-   "note": "Mitos-mitos begini sebenarnya menyakitkan"
+   "note": "Mitos-mitos begini sebenarnya menyakitkan. (cut at 8.40 s, after \"-kan\", before the laugh ~8.6 s)"
+  },
+  {
+   "src": "33.mp4",
+   "dur": 1.33,
+   "in": 0.1,
+   "z0": 1.45,
+   "z1": 1.55,
+   "fx": 0.45,
+   "fy": 0.58,
+   "amb": 0.3,
+   "note": "audience films him on a phone from below"
   },
   {
    "src": "05.mp4",
+   "dur": 1.0,
    "in": 2.4,
-   "dur": 0.92,
    "z0": 1.08,
    "z1": 1.12,
    "fx": 0.55,
-   "amb": 0.3,
-   "note": "reaction beat after the line lands"
+   "amb": 0.3
   },
   {
    "src": "35.mp4",
-   "in": 3.9,
    "dur": 1.0,
+   "in": 3.9,
    "z0": 1.04,
    "z1": 1.08,
    "amb": 0.35
   },
   {
    "src": "26.mp4",
+   "dur": 1.12,
    "in": 9.4,
-   "dur": 1.0,
    "z0": 1.2,
    "z1": 1.25,
    "fx": 0.42,
@@ -100,8 +113,8 @@
   },
   {
    "src": "50.mp4",
-   "in": 1.32,
    "dur": 2.7,
+   "in": 1.32,
    "z0": 1.25,
    "z1": 1.32,
    "fx": 0.5,
@@ -111,30 +124,28 @@
   },
   {
    "src": "52.mp4",
-   "in": 18.04,
    "dur": 2.71,
+   "in": 18.04,
    "z0": 1.45,
    "z1": 1.52,
    "fx": 0.32,
    "fy": 0.52,
    "voice": true,
-   "note": "A: untuk mereka dapatkan bantuan yang sepatutnya"
+   "note": "A: untuk mereka dapatkan bantuan yang sepatutnya lah"
   },
   {
-   "src": "15.mp4",
-   "in": 1.28,
-   "dur": 4.17,
-   "z0": 1.35,
-   "z1": 1.45,
-   "fx": 0.45,
-   "fy": 0.5,
+   "src": "15_tight.mov",
+   "dur": 3.19,
+   "in": 0.0,
+   "z0": 1.0,
+   "z1": 1.03,
    "voice": true,
-   "note": "Mungkin terdetik daripada itulah saya menulis buku ini"
+   "note": "Mungkin terdetik daripada itulah saya menulis buku ini (fillers/pauses removed, built by prep_meetgreet.py)"
   },
   {
    "src": "56.mp4",
-   "in": 2.0,
    "dur": 2.5,
+   "in": 2.0,
    "z0": 1.0,
    "z1": 1.08,
    "fx": 0.5,
@@ -144,8 +155,8 @@
   },
   {
    "src": "55.mp4",
-   "in": 0.0,
    "dur": 2.0,
+   "in": 0.0,
    "z0": 1.05,
    "z1": 1.1,
    "fx": 0.5,
@@ -154,20 +165,20 @@
    "note": "book handed over"
   },
   {
-   "src": "54.mp4",
-   "in": 6.5,
-   "dur": 2.5,
-   "z0": 1.08,
-   "z1": 1.12,
-   "fx": 0.5,
-   "fy": 0.55,
-   "amb": 0.6,
-   "note": "look up, laugh together"
+   "src": "06.mp4",
+   "dur": 2.3,
+   "in": 2.0,
+   "z0": 1.45,
+   "z1": 1.52,
+   "fx": 0.66,
+   "fy": 0.6,
+   "amb": 0.4,
+   "note": "seated on the sofa, a reader watches him from the side"
   },
   {
    "src": "58.mp4",
+   "dur": 2.2,
    "in": 3.2,
-   "dur": 2.0,
    "z0": 1.15,
    "z1": 1.2,
    "fx": 0.4,
@@ -177,8 +188,8 @@
   },
   {
    "src": "57.mp4",
-   "in": 0.3,
    "dur": 6.0,
+   "in": 0.3,
    "z0": 1.04,
    "z1": 1.12,
    "fx": 0.55,
@@ -188,8 +199,8 @@
   },
   {
    "src": "53.mp4",
-   "in": 1.0,
    "dur": 5.0,
+   "in": 1.0,
    "cx": 0.62,
    "cx1": 0.8,
    "z0": 1.0,
@@ -198,22 +209,13 @@
    "note": "group photo pan"
   },
   {
-   "src": "58.mp4",
-   "in": 9.95,
-   "dur": 1.0,
+   "src": "58_cover_center.jpg",
+   "dur": 5.0,
    "z0": 1.0,
-   "z1": 1.0,
-   "amb": 0.3,
-   "note": "push to cover"
-  },
-  {
-   "src": "58_cover.jpg",
-   "dur": 4.0,
-   "z0": 1.0,
-   "z1": 1.06,
+   "z1": 1.04,
    "fx": 0.5,
-   "fy": 0.45,
-   "note": "hold the book title"
+   "fy": 0.5,
+   "note": "whole book cover, centred"
   }
  ]
 }
