@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; overflow:hidden; background:#0b0f1c; }
+  #thumb { position:relative; width:1080px; height:1920px; overflow:hidden; }
+  #thumb-bg { position:absolute; inset:0; width:1080px; height:1920px; object-fit:cover; }
+  #thumb-scrim { position:absolute; left:0; right:0; top:950px; height:970px;
+    background:linear-gradient(180deg, rgba(8,12,24,0) 0%, rgba(8,12,24,0.70) 34%, rgba(8,12,24,0.86) 100%); }
+  /* text block kept inside the 4:5 grid crop (y 285-1635) and clear of the right action rail */
+  #thumb-block { position:absolute; left:64px; width:900px; top:1135px; }
+  #thumb-kicker { display:inline-block; padding:9px 20px 10px; border-radius:999px; background:#FFD21F; color:#1B2A4A;
+    font-family:'Inter',sans-serif; font-weight:900; font-size:30px; letter-spacing:0.08em; text-transform:uppercase; }
+  #thumb-l1, #thumb-l2 { display:block; font-family:'Montserrat',sans-serif; font-weight:900; color:#fff;
+    letter-spacing:-0.025em; line-height:0.98; white-space:nowrap; text-shadow:0 4px 18px rgba(0,0,0,0.5); }
+  #thumb-l1 { margin-top:22px; font-size:92px; }
+  #thumb-l2 { font-size:150px; color:#FFD21F; }
+  #thumb-ink { display:block; margin-top:4px; margin-left:-12px; width:700px; height:70px; overflow:visible; }
+  #thumb-sub { margin-top:14px; font-family:'Inter',sans-serif; font-weight:700; font-size:40px; color:#fff;
+    text-shadow:0 2px 10px rgba(0,0,0,0.5); white-space:nowrap; }
+  #thumb-sub b { color:#FFD21F; font-weight:900; }
+</style>
+</head>
+<body>
+<div id="thumb" data-composition-id="thumb" data-start="0" data-duration="1" data-width="1080" data-height="1920">
+  <img id="thumb-bg" class="clip" data-start="0" data-duration="1" src="assets/bg.jpg" data-note="bg = clip 57 @ 3.0 s, scaled 1.12x, hook grade (see reels/meetgreet_cuts.json G2)" alt="" />
+  <div id="thumb-scrim" class="clip" data-start="0" data-duration="1"></div>
+  <div id="thumb-block" class="clip" data-start="0" data-duration="1" data-layout-allow-overflow>
+    <span id="thumb-kicker">Pesta Buku Nogori 2026</span>
+    <span id="thumb-l1">Meet &amp; Greet</span>
+    <span id="thumb-l2">Dr Azren</span>
+    <svg id="thumb-ink" viewBox="0 0 700 70" data-layout-allow-overflow>
+      <defs><filter id="thumb-rough" x="-5%" y="-40%" width="110%" height="180%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/></filter></defs>
+      <path d="M 14 44 C 30 20, 56 18, 52 38 C 48 56, 22 54, 34 40 C 56 18, 170 50, 330 36 S 560 26, 680 34"
+            fill="none" stroke="#FFD21F" stroke-opacity="0.28" stroke-width="20" stroke-linecap="round" filter="url(#thumb-rough)"/>
+      <path d="M 14 44 C 30 20, 56 18, 52 38 C 48 56, 22 54, 34 40 C 56 18, 170 50, 330 36 S 560 26, 680 34"
+            fill="none" stroke="#FFD21F" stroke-width="10" stroke-linecap="round" filter="url(#thumb-rough)"/>
+    </svg>
+    <div id="thumb-sub">Bila penulis jumpa pembaca <b>•</b> USIM</div>
+  </div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  window.__timelines["thumb"] = gsap.timeline({ paused: true });
+</script>
+</body>
+</html>
